@@ -76,7 +76,6 @@ export default function Monitor(props: any) {
             position={[0, 0, 0.01]}
             scale={[1, 1, 1]}
             className="w-[1280px] h-[800px] bg-[#050505] overflow-hidden pointer-events-auto rounded-[8px]"
-            portal={null}
             occlude="blending"
           >
             <motion.div 

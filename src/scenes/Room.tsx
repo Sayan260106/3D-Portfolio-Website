@@ -5,8 +5,10 @@ import Computer from './Computer';
 import Monitor from './Monitor';
 import Lamp from './Lamp';
 import Keyboard from './Keyboard';
+import Mouse from './Mouse';
 import Plant from './Plant';
 import WallPlant from './WallPlant';
+import MousePad from './MousePad';
 
 function Painting() {
   // Using a stunning ethereal abstract piece that matches the "deity" vibe (Blue/Gold/Divine)
@@ -131,7 +133,9 @@ export default function Room() {
       <group position={[0, 0.5, 0]}>
         <Computer position={[-2.2, 0, -0.4]} />
         <Monitor position={[0, 0, -0.2]} />
-        <Keyboard position={[0, 0, 0.8]} />
+        <Keyboard position={[0, 0, 0.6]} />
+        <MousePad position={[1.55, 0, 0.65]} rotation={[0, -0.1, 0]} />
+        <Mouse position={[1.55, 0, 0.65]} rotation={[0, -0.1, 0]} />
         <Lamp position={[2.5, 0, 0.6]} />
         <Plant position={[-2.5, 0, 0.7]} />
         
@@ -147,6 +151,8 @@ export default function Room() {
           </mesh>
         </group>
       </group>
+
+      {/* Large Floor Plant - Monstera on Stand */}
       <WallPlant
         position={[5, 1.05, -3.2]}
         rotation={[0, Math.PI / 7, 0]}
