@@ -11,7 +11,7 @@ function CinematicCamera() {
   
   useFrame((state) => {
     // Keep looking at the target
-    state.camera.lookAt(0, 1.15, 0);
+    state.camera.lookAt(0, 3, 0);
   });
 
   return <PerspectiveCamera ref={cameraRef} makeDefault position={[0,0,8.5]} fov={45} />;
@@ -68,7 +68,7 @@ export default function MainScene() {
         <Environment preset="studio" />
       </Suspense>
 
-      <EffectComposer disableNormalPass>
+      <EffectComposer enableNormalPass={false}>
         <Bloom luminanceThreshold={1} mipmapBlur intensity={0.4} radius={0.5} />
         <Noise opacity={0.03} />
         <Vignette eskil={false} offset={0.05} darkness={0.9} />

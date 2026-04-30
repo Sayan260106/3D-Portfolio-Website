@@ -71,13 +71,13 @@ export default function Carpet(props: any) {
         name.includes('ornament')
       ) {
         mat.color = new THREE.Color('#c5a059');
-        mat.roughness = 0.88;
+        mat.roughness = 1;
         mat.metalness = 0;
       }
 
       // preserve original colored center details
       else {
-        mat.roughness = 0.95;
+        mat.roughness = 1;
         mat.metalness = 0;
       }
 
