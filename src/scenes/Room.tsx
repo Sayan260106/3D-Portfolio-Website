@@ -94,62 +94,50 @@ export default function Room() {
       </group>
 
       {/* Desk - Executive Walnut */}
-      <group position={[0, 0.45, 0]}>
+      <group position={[-0.15, 0.45, 0]}>
         {/* Main Body (Walnut) */}
         <mesh castShadow receiveShadow>
-          <boxGeometry args={[7, 0.12, 2.5]} />
+          <boxGeometry args={[8.7, 0.12, 3.1]} />
           <meshStandardMaterial color="#1a120b" roughness={0.4} metalness={0.1} />
         </mesh>
         {/* Subtle Dark Wood Inlay (Instead of bright marble) */}
         <mesh position={[0, 0.065, 0]} receiveShadow rotation={[-Math.PI / 2, 0, 0]}>
-          <planeGeometry args={[7, 0.4]} />
+          <planeGeometry args={[7, 0.7]} />
           <meshStandardMaterial color="#0a0a0a" roughness={0.8} />
         </mesh>
         {/* Gold Trim */}
         <mesh position={[0, -0.06, 0]}>
-          <boxGeometry args={[7.02, 0.02, 2.52]} />
+          <boxGeometry args={[8.7, 0.02, 3.1]} />
           <meshStandardMaterial color="#c5a059" metalness={0.9} roughness={0.1} />
         </mesh>
       </group>
       
       {/* Desk Legs - High-end gold finish */}
-      <mesh position={[-3.2, 0, 1]} castShadow>
+      <mesh position={[-3.75, 0, 1.35]} castShadow>
         <cylinderGeometry args={[0.04, 0.04, 0.9]} />
         <meshStandardMaterial color="#c5a059" metalness={0.9} roughness={0.1} />
       </mesh>
-      <mesh position={[3.2, 0, 1]} castShadow>
+      <mesh position={[3.75, 0, 1.35]} castShadow>
         <cylinderGeometry args={[0.04, 0.04, 0.9]} />
         <meshStandardMaterial color="#c5a059" metalness={0.9} roughness={0.1} />
       </mesh>
-      <mesh position={[-3.2, 0, -1]} castShadow>
+      <mesh position={[4, 0, -1.35]} castShadow>
         <cylinderGeometry args={[0.04, 0.04, 0.9]} />
         <meshStandardMaterial color="#c5a059" metalness={0.9} roughness={0.1} />
       </mesh>
-      <mesh position={[3.2, 0, -1]} castShadow>
+      <mesh position={[-4, 0, -1.35]} castShadow>
         <cylinderGeometry args={[0.04, 0.04, 0.9]} />
         <meshStandardMaterial color="#c5a059" metalness={0.9} roughness={0.1} />
       </mesh>
 
       <group position={[0, 0.5, 0]}>
-        <Computer position={[-2.2, 0, -0.4]} />
-        <Monitor position={[0, 0, -0.2]} />
-        <Keyboard position={[0, 0, 0.6]} />
-        <MousePad position={[1.55, 0, 0.65]} rotation={[0, -0.1, 0]} />
-        <Mouse position={[1.55, 0, 0.65]} rotation={[0, -0.1, 0]} />
-        <Lamp position={[2.5, 0, 0.6]} />
-        <Plant position={[-2.5, 0, 0.7]} />
-        
-        {/* Designer Desk Accessory - Minimalist Polished Box */}
-        <group position={[2.5, 0, -0.6]}>
-          <mesh castShadow receiveShadow>
-            <boxGeometry args={[0.5, 0.3, 0.5]} />
-            <meshStandardMaterial color="#050505" roughness={0.1} metalness={1} />
-          </mesh>
-          <mesh position={[0, 0.16, 0]}>
-            <boxGeometry args={[0.52, 0.02, 0.52]} />
-            <meshStandardMaterial color="#c5a059" metalness={1} roughness={0.05} />
-          </mesh>
-        </group>
+        <Computer position={[-2.6, -0.2, -0.1]} rotation={[0, -2, 0]}/>
+        <Monitor position={[0, 0, -0.6]} />
+        <Keyboard position={[0, 0, 0.95]} />
+        <MousePad position={[1.55, 0, 0.95]} rotation={[0, -0.15, 0]} />
+        <Mouse position={[1.55, 0, 0.95]} rotation={[0, -0.1, 0]} />
+        <Lamp position={[3, 0, 0.7]} />
+        <Plant position={[-2.7, 0, 1.2]} />
       </group>
 
       {/* Large Floor Plant - Monstera on Stand */}

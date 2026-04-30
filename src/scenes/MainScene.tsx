@@ -14,7 +14,7 @@ function CinematicCamera() {
     state.camera.lookAt(0, 1.15, 0);
   });
 
-  return <PerspectiveCamera ref={cameraRef} makeDefault position={[-3, 2, 6]} fov={45} />;
+  return <PerspectiveCamera ref={cameraRef} makeDefault position={[0,0,8.5]} fov={45} />;
 }
 
 export default function MainScene() {
@@ -23,8 +23,8 @@ export default function MainScene() {
       <CinematicCamera />
       <OrbitControls 
         enablePan={false} 
-        minDistance={4} 
-        maxDistance={8}
+        minDistance={5} 
+        maxDistance={12}
         minPolarAngle={Math.PI / 4}
         maxPolarAngle={Math.PI / 2.1}
         minAzimuthAngle={-Math.PI / 3}
@@ -35,18 +35,18 @@ export default function MainScene() {
       />
       
       {/* High-End Studio Lighting */}
-      <ambientLight intensity={0.8} />
+      <ambientLight intensity={0.5} />
       <spotLight 
         position={[2, 8, 2]} 
         angle={0.4} 
         penumbra={1} 
-        intensity={6} 
+        intensity={4} 
         castShadow 
         color="#fff4e6"
         shadow-mapSize={[2048, 2048]}
       />
-      <directionalLight position={[-8, 5, 5]} intensity={1.2} color="#ffffff" />
-      <directionalLight position={[0, 12, -4]} intensity={0.5} color="#e6f2ff" />
+      <directionalLight position={[-8, 5, 5]} intensity={1.0} color="#ffffff" />
+      <directionalLight position={[0, 12, -4]} intensity={0.3} color="#e6f2ff" />
       
       {/* Accent Point Lights for Gold Materials */}
       <pointLight position={[3, 2, 2]} intensity={1.5} color="#ffd700" />

@@ -5,7 +5,7 @@ import * as THREE from 'three';
 const MOUSE_MODEL = '/models/mouse_a4tech_x-710bk.glb';
 
 const DESK_CLEARANCE = 0.025;
-const MOUSE_WIDTH = 0.4;
+const MOUSE_WIDTH = 0.33;
 
 export default function Mouse(props: any) {
   const { scene } = useGLTF(MOUSE_MODEL);
