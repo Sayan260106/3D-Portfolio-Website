@@ -14,6 +14,11 @@ import Speaker from './Speaker';
 import Wires from './Wires';
 import ShowPiece from './ShowPiece';
 import SteampunkWallClock, { WALL_CLOCK_PLACEMENT } from './WallClock';
+import Chair from './Chair';
+import Headset from './HeadSet';
+import HeadsetStand from './Stand';
+import Mug from './CoffeeMug';
+import BookShelf from './BookShelf';
 
 function Painting() {
   // Using a stunning ethereal abstract piece that matches the "deity" vibe (Blue/Gold/Divine)
@@ -70,13 +75,21 @@ export default function Room() {
 
       {/* Baseboard */}
       <mesh position={[0, -0.2, -3.95]}>
+        <boxGeometry args={[29.9, 0.5, 0.1]} />
+        <meshStandardMaterial color="#0a0a0a" roughness={0.5} />
+      </mesh>
+      <mesh position={[-11.95, -0.2, 0]} rotation={[0, Math.PI / 2, 0]}>
+        <boxGeometry args={[20, 0.5, 0.1]} />
+        <meshStandardMaterial color="#0a0a0a" roughness={0.5} />
+      </mesh>
+      <mesh position={[14.87, -0.2, 0]} rotation={[0, Math.PI / 2, 0]}>
         <boxGeometry args={[20, 0.5, 0.1]} />
         <meshStandardMaterial color="#0a0a0a" roughness={0.5} />
       </mesh>
 
       {/* Back Wall - Warm Professional Grey */}
-      <mesh position={[0, 4, -4]} receiveShadow>
-        <planeGeometry args={[20, 10]} />
+      <mesh position={[0, 4.25, -4]} receiveShadow>
+        <planeGeometry args={[30, 9.5]} />
         <meshStandardMaterial color="#1c1c1e" roughness={0.9} />
       </mesh>
 
@@ -100,13 +113,94 @@ export default function Room() {
       </group>
 
       {/* Side Wall (Left) */}
-      <mesh position={[-6, 4, 0]} rotation={[0, Math.PI / 2, 0]} receiveShadow>
-        <planeGeometry args={[12, 10]} />
-        <meshStandardMaterial color="#222222" roughness={0.9} />
+      <mesh position={[-12, 4.25, 0]} rotation={[0, Math.PI / 2, 0]} receiveShadow>
+        <planeGeometry args={[20, 9.5]} />
+        <meshStandardMaterial color="#1a1a1c" roughness={0.9} />
       </mesh>
 
+      {/* Designer Door on Left Wall */}
+      <group position={[-12, 1.5, 6]} rotation={[0, Math.PI / 2, 0]}>
+        {/* Door Frame */}
+        <mesh position={[0, 0, 0]}>
+          <boxGeometry args={[3,8, 0.1]} />
+          <meshStandardMaterial color="#050505" />
+        </mesh>
+        {/* Door Leaf (Walnut) */}
+        <mesh position={[0, 0, 0.02]} castShadow>
+          <boxGeometry args={[3, 4, 0.05]} />
+          <meshStandardMaterial color="#1a120b" roughness={0.4} />
+        </mesh>
+        {/* Door Handle (Gold) */}
+        <group position={[1.1, 1, 0.06]}>
+          <mesh castShadow rotation={[0, 0, Math.PI / 2]}>
+            <cylinderGeometry args={[0.02, 0.02, 0.4]} />
+            <meshStandardMaterial color="#c5a059" metalness={0.9} roughness={0.1} />
+          </mesh>
+        </group>
+      </group>
+
+      {/* Side Wall (Right) with Window Area */}
+      <group position={[15, 4.25, 0]} rotation={[0, -Math.PI / 2, 0]}>
+        <mesh receiveShadow>
+          <planeGeometry args={[20, 9.5]} />
+          <meshStandardMaterial color="#1a1a1c" roughness={0.9} />
+        </mesh>
+        
+        {/* Large Minimalist Window */}
+        <group position={[2, 1, 0.01]}>
+          <mesh>
+            <planeGeometry args={[6, 5]} />
+            <meshStandardMaterial color="#000" emissive="#1a2b3c" emissiveIntensity={0.2} />
+          </mesh>
+          {/* Window Frame */}
+          <mesh position={[0, 0, 0.01]}>
+            <boxGeometry args={[6.2, 0.1, 0.05]} />
+            <meshStandardMaterial color="#050505" />
+          </mesh>
+          <mesh position={[0, 2.5, 0.01]}>
+            <boxGeometry args={[6.2, 0.1, 0.05]} />
+            <meshStandardMaterial color="#050505" />
+          </mesh>
+          <mesh position={[0, -2.5, 0.01]}>
+            <boxGeometry args={[6.2, 0.1, 0.05]} />
+            <meshStandardMaterial color="#050505" />
+          </mesh>
+          <mesh position={[3, 0, 0.01]}>
+            <boxGeometry args={[0.1, 5.1, 0.05]} />
+            <meshStandardMaterial color="#050505" />
+          </mesh>
+          <mesh position={[-3, 0, 0.01]}>
+            <boxGeometry args={[0.1, 5.1, 0.05]} />
+            <meshStandardMaterial color="#050505" />
+          </mesh>
+          <pointLight position={[0, 0, 1]} intensity={0.5} color="#88aaff" distance={10} />
+        </group>
+      </group>
+
+      {/* Ceiling */}
+      <mesh position={[0, 9, 0]} rotation={[Math.PI / 2, 0, 0]} receiveShadow>
+        <planeGeometry args={[30, 20]} />
+        <meshStandardMaterial color="#111111" roughness={0.8} />
+      </mesh>
+
+      {/* Crown Molding - Gold Trim around the ceiling edge */}
+      <group position={[0, 8.95, 0]}>
+        <mesh position={[0, 0, -3.95]}>
+          <boxGeometry args={[30, 0.1, 0.1]} />
+          <meshStandardMaterial color="#c5a059" metalness={0.8} roughness={0.2} />
+        </mesh>
+        <mesh position={[14.91, 0, 0]} rotation={[0, Math.PI / 2, 0]}>
+          <boxGeometry args={[20, 0.1, 0.1]} />
+          <meshStandardMaterial color="#c5a059" metalness={0.8} roughness={0.2} />
+        </mesh>
+        <mesh position={[-11.95, 0, 0]} rotation={[0, Math.PI / 2, 0]}>
+          <boxGeometry args={[20, 0.1, 0.1]} />
+          <meshStandardMaterial color="#c5a059" metalness={0.8} roughness={0.2} />
+        </mesh>
+      </group>
+
       {/* Wall Clock */}
-      <SteampunkWallClock {...WALL_CLOCK_PLACEMENT} />
+      <SteampunkWallClock {...WALL_CLOCK_PLACEMENT}/>
 
       {/* Architectural Light Bar (Horizontal) - Moved from desk to wall */}
       <group position={[0, 1.5, -3.95]}>
@@ -127,15 +221,15 @@ export default function Room() {
       </group>
 
       {/* Desk - Executive Walnut */}
-      <group position={[-0.15, 2.9, 0]}>
+      <group position={[-0.15, 2.9, 0.27]}>
         {/* Main Body (Walnut) */}
         <mesh castShadow receiveShadow>
-          <boxGeometry args={[8.7, 0.12, 3.1]} />
+          <boxGeometry args={[8.7, 0.12, 3.7]} />
           <meshStandardMaterial color="#0b1a10ff" roughness={0.4} metalness={0.1} />
         </mesh>
         {/* Subtle Dark Wood Inlay (Instead of bright marble) */}
-        <mesh position={[0, 0.065, 0]} receiveShadow rotation={[-Math.PI / 2, 0, 0]}>
-          <planeGeometry args={[8.58, 3.02]} />
+        <mesh position={[0, 0.065, 0.02]} receiveShadow rotation={[-Math.PI / 2, 0, 0]}>
+          <planeGeometry args={[8.58, 3.62]} />
           <meshStandardMaterial color="#0a0a0a" roughness={0.8} />
         </mesh>
         {/* Gold Trim */}
@@ -168,22 +262,31 @@ export default function Room() {
         <Monitor position={[0, 2.46, -0.7]} />
         <Speaker position={[-2.3, 2.44, 0.2]} rotation={[0, 0.2, 0]} />
         <Speaker position={[2.3, 2.44, 0.2]} rotation={[0, -0.2, 0]} />
-        <Keyboard position={[0, 2.43, 0.95]} />
-        <MousePad position={[1.55, 2.446, 0.95]} rotation={[0, -0.15, 0]} />
-        <Mouse position={[1.55, 2.442, 0.95]} rotation={[0, -0.1, 0]} />
+        <Keyboard position={[0, 2.43, 1.6]} />
+        <MousePad position={[1.62, 2.446, 1.6]} rotation={[0, -0.15, 0]} />
+        <Mouse position={[1.65, 2.442, 1.6]} rotation={[0, -0.1, 0]} />
         <Lamp position={[3, 2.46, 0.7]} />
-        <Plant position={[-2.7, 2.54, 1.2]} />
+        <Mug position={[2.7, 2.44, 1.6]} rotation={[0, 0.15, 0]} scale={1.8} />
+        <Plant position={[-3.7, 2.54, 1.75]} />
         <Wires position={[0, 2.46, 0]}/>
         <ShowPiece position={[3.7, 2.43, -1]} />
+        <Headset position={[-2.56, 2.71, 1.11]} rotation={[0, 6.5, 0]} scale={2.3} />
+        <HeadsetStand position={[-2.38, 2.46, 1.46]} rotation={[0, -1.2, 0]} scale={2.7} />
       </group>
 
       {/* Large Floor Plant - Monstera on Stand */}
       <WallPlant
-        position={[5, 0, -3.2]}
+        position={[5, -0.1, -3.2]}
         rotation={[0, Math.PI / 7, 0]}
         scale={2.3}
       />
       <Carpet position={[-0.15, 0, 0.05]} />
+      <Chair position={[2.5, 0, 3]} rotation = {[0, -2.5, 0]}/>
+      <BookShelf
+        position={[10.5, -0.1, -3.4]}
+        rotation={[0, 1.15, 0]}
+        scale={2.9}
+      />
     </group>
   );
 }
