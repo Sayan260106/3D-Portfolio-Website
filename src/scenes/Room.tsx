@@ -24,7 +24,7 @@ import SuperCar from './Car1';
 
 function Painting() {
   // Using a stunning ethereal abstract piece that matches the "deity" vibe (Blue/Gold/Divine)
-  const texture = useTexture('https://images.unsplash.com/photo-1605721911519-3dfeb3be25e7?auto=format&fit=crop&q=80&w=1600');
+  const texture = useTexture('https://images.unsplash.com/photo-1605721911519-3dfeb3be25e7?auto=format&fit=crop&q=80&w=800');
   texture.colorSpace = THREE.SRGBColorSpace;
   
   return (

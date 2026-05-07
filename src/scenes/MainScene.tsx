@@ -120,9 +120,9 @@ export default function MainScene() {
           <ContactShadows
             opacity={0.55}
             scale={30}
-            blur={2.8}
+            blur={1.5}
             far={4.5}
-            resolution={1024}
+            resolution={256}
             color="#000000"
           />
         </group>
