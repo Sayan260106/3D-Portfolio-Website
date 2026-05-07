@@ -2,7 +2,7 @@ import React, { useLayoutEffect, useMemo } from 'react';
 import { useGLTF } from '@react-three/drei';
 import * as THREE from 'three';
 
-const CARPET_MODEL = '/models/persian_carpet.glb';
+const CARPET_MODEL = '/models/persian_carpet-transformed.glb';
 
 const TARGET_WIDTH = 7;     // left-right size under desk
 const FLOOR_CLEARANCE = 0.012; // slightly above floor

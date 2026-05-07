@@ -2,7 +2,7 @@ import React, { useLayoutEffect, useMemo } from 'react';
 import { useGLTF } from '@react-three/drei';
 import * as THREE from 'three';
 
-const CPU_MODEL = '/models/gaming_cpu.glb';
+const CPU_MODEL = '/models/gaming_cpu-transformed.glb';
 
 const DESK_CLEARANCE = 0.025;
 const CPU_WIDTH = 2;

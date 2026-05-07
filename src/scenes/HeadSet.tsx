@@ -2,7 +2,7 @@ import React, { useLayoutEffect, useMemo } from 'react';
 import { useGLTF } from '@react-three/drei';
 import * as THREE from 'three';
 
-const HEADSET_MODEL = '/models/gaming_headset.glb';
+const HEADSET_MODEL = '/models/gaming_headset-transformed.glb';
 const HEADSET_HEIGHT = 0.42;
 const TABLE_CLEARANCE = 0.012;
 

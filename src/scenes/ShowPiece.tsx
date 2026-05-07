@@ -2,7 +2,7 @@ import React, { useLayoutEffect, useMemo } from 'react';
 import { useGLTF } from '@react-three/drei';
 import * as THREE from 'three';
 
-const SHOW_PIECE_MODEL = '/models/lord_krishna_playing_the_flute_at_csmvs.glb';
+const SHOW_PIECE_MODEL = '/models/lord_krishna_playing_the_flute_at_csmvs-transformed.glb';
 const SHOW_PIECE_HEIGHT = 1.6;
 const DESK_CLEARANCE = 0.025;
 

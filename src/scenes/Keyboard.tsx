@@ -2,7 +2,7 @@ import React, { useLayoutEffect, useMemo } from 'react';
 import { useGLTF } from '@react-three/drei';
 import * as THREE from 'three';
 
-const KEYBOARD_MODEL = '/models/custom_-_mechanical_keyboard.glb';
+const KEYBOARD_MODEL = '/models/custom_-_mechanical_keyboard-transformed.glb';
 
 const DESK_CLEARANCE = 0.025;
 const KEYBOARD_WIDTH = 2; // ✅ increased horizontal width

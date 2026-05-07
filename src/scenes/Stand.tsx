@@ -2,7 +2,7 @@ import React, { useLayoutEffect, useMemo } from 'react';
 import { useGLTF } from '@react-three/drei';
 import * as THREE from 'three';
 
-const STAND_MODEL = '/models/support_casque.glb';
+const STAND_MODEL = '/models/support_casque-transformed.glb';
 const STAND_HEIGHT = 0.42;
 const TABLE_CLEARANCE = 0.012;
 

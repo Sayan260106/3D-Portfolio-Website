@@ -2,7 +2,7 @@ import React, { useLayoutEffect, useMemo } from 'react';
 import { useGLTF } from '@react-three/drei';
 import * as THREE from 'three';
 
-const MOUSE_MODEL = '/models/mouse_a4tech_x-710bk.glb';
+const MOUSE_MODEL = '/models/mouse_a4tech_x-710bk-transformed.glb';
 
 const DESK_CLEARANCE = 0.025;
 const MOUSE_WIDTH = 0.33;

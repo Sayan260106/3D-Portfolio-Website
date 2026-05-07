@@ -2,7 +2,7 @@ import React, { useLayoutEffect, useMemo } from 'react';
 import { useGLTF } from '@react-three/drei';
 import * as THREE from 'three';
 
-const PLANT_MODEL = '/models/monstera_deliciosa_potted_mid-century_plant.glb';
+const PLANT_MODEL = '/models/monstera_deliciosa_potted_mid-century_plant-transformed.glb';
 
 const TARGET_HEIGHT = 2;      // final visible height
 const FLOOR_OFFSET = 0.02;      // lift slightly above floor

@@ -2,7 +2,7 @@ import React, { useLayoutEffect, useMemo } from 'react';
 import { useGLTF } from '@react-three/drei';
 import * as THREE from 'three';
 
-const SPEAKER_MODEL = '/models/krk_classic_5_studio_monitor_speaker.glb';
+const SPEAKER_MODEL = '/models/krk_classic_5_studio_monitor_speaker-transformed.glb';
 
 const DESK_CLEARANCE = 0.02;
 const SPEAKER_HEIGHT = 0.65;

@@ -2,7 +2,7 @@ import React, { useLayoutEffect, useMemo } from 'react';
 import { useGLTF } from '@react-three/drei';
 import * as THREE from 'three';
 
-const PLANT_MODEL = '/models/banana_plant_with_pot.glb';
+const PLANT_MODEL = '/models/banana_plant_with_pot-transformed.glb';
 
 export default function Plant(props: any) {
   const { scene } = useGLTF(PLANT_MODEL);

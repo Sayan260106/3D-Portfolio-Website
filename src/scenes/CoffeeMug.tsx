@@ -3,7 +3,7 @@ import { useGLTF } from '@react-three/drei';
 import { useFrame } from '@react-three/fiber';
 import * as THREE from 'three';
 
-const MUG_MODEL = '/models/nasa_mug.glb';
+const MUG_MODEL = '/models/nasa_mug-transformed.glb';
 const MUG_HEIGHT   = 0.16;
 const TABLE_CLEAR  = 0.012;
 

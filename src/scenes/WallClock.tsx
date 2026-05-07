@@ -1,13 +1,14 @@
-import React, { useLayoutEffect, useMemo, useRef } from "react";
+import React, { JSX, useLayoutEffect, useMemo, useRef } from "react";
 import { useGLTF } from "@react-three/drei";
 import { useFrame } from "@react-three/fiber";
 import * as THREE from "three";
 
-const MODEL_PATH = "/models/steampunk-style_clock.glb";
+const MODEL_PATH = "/models/steampunk-style_clock-transformed.glb";
+
 const CLOCK_DIAMETER = 1.7;
 const TAU = Math.PI * 2;
 
-const HAND_REST_OFFSET = 0;
+const HAND_LAYER_OFFSET = 0.002;
 
 export const WALL_CLOCK_PLACEMENT = {
   position: [5.5, 6.8, -3.92] as [number, number, number],
@@ -16,172 +17,199 @@ export const WALL_CLOCK_PLACEMENT = {
 };
 
 /* ─────────────────────────────────────────────
-   MATERIAL HELPERS
+   HELPERS
 ───────────────────────────────────────────── */
 
-function styleClockMaterial(material: THREE.Material, objectName: string) {
-  if (!(material instanceof THREE.MeshStandardMaterial)) return;
+function isStandardMaterial(
+  material: THREE.Material
+): material is THREE.MeshStandardMaterial {
+  return material instanceof THREE.MeshStandardMaterial;
+}
 
-  const isGlass = objectName.includes("glass");
-  const isFace = objectName.includes("face") || objectName.includes("dial");
-  const isFrame = objectName.includes("frame") || objectName.includes("case");
+function styleClockMaterial(
+  material: THREE.Material,
+  objectName: string
+) {
+  if (!isStandardMaterial(material)) return;
+
+  const name = objectName.toLowerCase();
+
+  const isGlass =
+    name.includes("glass") ||
+    name.includes("crystal");
+
+  const isFace =
+    name.includes("face") ||
+    name.includes("dial");
+
+  const isFrame =
+    name.includes("frame") ||
+    name.includes("case") ||
+    name.includes("body");
+
   const isGear =
-    objectName.includes("gear") || objectName.includes("cog");
+    name.includes("gear") ||
+    name.includes("cog");
 
-  material.side = isGlass ? THREE.DoubleSide : THREE.FrontSide;
+  material.side = isGlass
+    ? THREE.DoubleSide
+    : THREE.FrontSide;
 
   if (isGlass) {
-    /* Realistic watch glass */
     material.transparent = true;
     material.opacity = 0.08;
-    material.roughness = 0.0;
-    material.metalness = 0.0;
-    material.envMapIntensity = 1.2;
+    material.roughness = 0;
+    material.metalness = 0;
+    material.envMapIntensity = 1.3;
     material.depthWrite = false;
   } else if (isFace) {
-    /* Aged parchment dial */
     material.roughness = 0.82;
-    material.metalness = 0.0;
-    material.envMapIntensity = 0.2;
+    material.metalness = 0.02;
+    material.envMapIntensity = 0.25;
   } else if (isFrame) {
-    /* Polished brass frame */
-    material.roughness = 0.18;
-    material.metalness = 0.95;
-    material.envMapIntensity = 1.1;
+    material.roughness = 0.16;
+    material.metalness = 0.96;
+    material.envMapIntensity = 1.2;
   } else if (isGear) {
-    /* Worn bronze gears */
-    material.roughness = 0.55;
-    material.metalness = 0.85;
-    material.envMapIntensity = 0.7;
+    material.roughness = 0.5;
+    material.metalness = 0.88;
+    material.envMapIntensity = 0.8;
   } else {
-    material.envMapIntensity = 0.55;
+    material.envMapIntensity = 0.6;
   }
 
   material.needsUpdate = true;
 }
 
-function meshDiagonal(mesh: THREE.Mesh): number {
-  mesh.geometry.computeBoundingBox();
-  const bb = mesh.geometry.boundingBox!;
-  return bb.min.distanceTo(bb.max);
-}
-
-function pickHandsByGeometry(
-  meshes: THREE.Mesh[]
-): [THREE.Mesh | null, THREE.Mesh | null, THREE.Mesh | null] {
-  const withDiag = meshes.map((m) => ({
-    mesh: m,
-    diag: meshDiagonal(m),
-  }));
-
-  const maxDiag = Math.max(...withDiag.map((d) => d.diag));
-
-  const candidates = withDiag
-    .filter((d) => d.diag < maxDiag * 0.75)
-    .sort((a, b) => a.diag - b.diag);
-
-  return [
-    candidates[1]?.mesh ?? null, // hour   – medium
-    candidates[2]?.mesh ?? null, // minute – longest
-    candidates[0]?.mesh ?? null, // second – thinnest/shortest
-  ];
-}
-
-/* Realistic hand materials – proper depth behaviour */
-function makeHandMaterial(
-  color: string,
-  emissive: string,
-  emissiveIntensity: number,
-  metalness: number,
-  roughness: number
-) {
+function createHandMaterial({
+  color,
+  emissive,
+  emissiveIntensity,
+  metalness,
+  roughness,
+}: {
+  color: string;
+  emissive: string;
+  emissiveIntensity: number;
+  metalness: number;
+  roughness: number;
+}) {
   return new THREE.MeshStandardMaterial({
-    color: new THREE.Color(color),
-    emissive: new THREE.Color(emissive),
+    color,
+    emissive,
     emissiveIntensity,
     metalness,
     roughness,
-    /* ⚠️  FIXED: let the depth buffer work normally so hands
-         don't bleed through objects in front of the clock     */
     depthWrite: true,
     depthTest: true,
     side: THREE.FrontSide,
   });
 }
 
-/* Steampunk brass / steel / red-second palette */
-const HAND_STYLES = [
-  {
-    // hour – warm antique brass
+function meshDiagonal(mesh: THREE.Mesh) {
+  mesh.geometry.computeBoundingBox();
+
+  const box = mesh.geometry.boundingBox;
+
+  if (!box) return 0;
+
+  return box.min.distanceTo(box.max);
+}
+
+function pickHandsByGeometry(meshes: THREE.Mesh[]) {
+  const candidates = meshes
+    .map((mesh) => ({
+      mesh,
+      diagonal: meshDiagonal(mesh),
+    }))
+    .sort((a, b) => a.diagonal - b.diagonal);
+
+  if (candidates.length < 3) {
+    return {
+      hour: null,
+      minute: null,
+      second: null,
+    };
+  }
+
+  return {
+    second: candidates[0].mesh,
+    hour: candidates[1].mesh,
+    minute: candidates[2].mesh,
+  };
+}
+
+function getClockAngles() {
+  const now = new Date();
+
+  const milliseconds = now.getMilliseconds();
+
+  const seconds =
+    now.getSeconds() + milliseconds / 1000;
+
+  const minutes =
+    now.getMinutes() + seconds / 60;
+
+  const hours =
+    (now.getHours() % 12) + minutes / 60;
+
+  return {
+    second: -(seconds / 60) * TAU,
+    minute: -(minutes / 60) * TAU,
+    hour: -(hours / 12) * TAU,
+  };
+}
+
+/* ─────────────────────────────────────────────
+   HAND MATERIALS
+───────────────────────────────────────────── */
+
+const HAND_MATERIALS = {
+  hour: {
     color: "#c8933a",
     emissive: "#5a3a0a",
-    emissiveIntensity: 0.3,
+    emissiveIntensity: 0.28,
     metalness: 0.95,
     roughness: 0.18,
   },
-  {
-    // minute – cool steel
+
+  minute: {
     color: "#b0bec5",
     emissive: "#37474f",
-    emissiveIntensity: 0.2,
-    metalness: 0.9,
+    emissiveIntensity: 0.18,
+    metalness: 0.92,
     roughness: 0.22,
   },
-  {
-    // second – vivid red lacquer
+
+  second: {
     color: "#c0392b",
     emissive: "#7b0000",
-    emissiveIntensity: 0.5,
-    metalness: 0.3,
+    emissiveIntensity: 0.42,
+    metalness: 0.35,
     roughness: 0.3,
   },
-];
-
-/* ─────────────────────────────────────────────
-   ACCURATE LOCAL TIME  (sub-millisecond smooth)
-───────────────────────────────────────────── */
-
-function getCurrentClockAngles() {
-  const now = new Date();
-
-  /*
-   * Use performance.now() for buttery-smooth animation between
-   * Date ticks.  We anchor it once so drift cannot accumulate.
-   */
-  const ms = now.getMilliseconds();
-  const sec = now.getSeconds() + ms / 1000;
-  const min = now.getMinutes() + sec / 60;
-  const hr = (now.getHours() % 12) + min / 60;
-
-  /*
-   * Analog clock hands rotate clockwise  →  negative Z rotation
-   * in Three.js right-hand coordinate system.
-   * 12 o'clock = 0 rad; each full revolution = TAU.
-   */
-  return {
-    second: -(sec / 60) * TAU + HAND_REST_OFFSET,
-    minute: -(min / 60) * TAU + HAND_REST_OFFSET,
-    hour: -(hr / 12) * TAU + HAND_REST_OFFSET,
-  };
-}
+};
 
 /* ─────────────────────────────────────────────
    COMPONENT
 ───────────────────────────────────────────── */
 
-export default function SteampunkWallClock(props: any) {
+export default function SteampunkWallClock(
+  props: JSX.IntrinsicElements["group"]
+) {
   const hourHand = useRef<THREE.Object3D | null>(null);
   const minuteHand = useRef<THREE.Object3D | null>(null);
   const secondHand = useRef<THREE.Object3D | null>(null);
 
   const { scene } = useGLTF(MODEL_PATH);
 
-  /* Clone scene once and compute normalised scale / position */
   const { clock, modelScale, modelPosition } = useMemo(() => {
-    const clock = scene.clone(true);
-    clock.updateMatrixWorld(true);
+    const clonedScene = scene.clone(true);
 
-    const bounds = new THREE.Box3().setFromObject(clock);
+    clonedScene.updateMatrixWorld(true);
+
+    const bounds = new THREE.Box3().setFromObject(clonedScene);
+
     const size = new THREE.Vector3();
     const center = new THREE.Vector3();
 
@@ -189,34 +217,46 @@ export default function SteampunkWallClock(props: any) {
     bounds.getCenter(center);
 
     const diameter = Math.max(size.x, size.y);
-    const modelScale = diameter > 0 ? CLOCK_DIAMETER / diameter : 1;
 
-    const modelPosition: [number, number, number] = [
-      -center.x * modelScale,
-      -center.y * modelScale,
-      /* Flush against the wall – no gap, no forward pop */
-      -bounds.max.z * modelScale,
+    const scale =
+      diameter > 0
+        ? CLOCK_DIAMETER / diameter
+        : 1;
+
+    const position: [number, number, number] = [
+      -center.x * scale,
+      -center.y * scale,
+      -bounds.max.z * scale,
     ];
 
-    return { clock, modelScale, modelPosition };
+    return {
+      clock: clonedScene,
+      modelScale: scale,
+      modelPosition: position,
+    };
   }, [scene]);
 
-  /* ── Material + hand identification ── */
+  /* ─────────────────────────────────────────────
+     MATERIALS + HAND DETECTION
+  ───────────────────────────────────────────── */
+
   useLayoutEffect(() => {
     const allMeshes: THREE.Mesh[] = [];
 
-    clock.traverse((child: any) => {
-      if (!child.isMesh) return;
+    clock.traverse((child) => {
+      if (!(child instanceof THREE.Mesh)) return;
+
+      allMeshes.push(child);
 
       child.castShadow = true;
       child.receiveShadow = true;
 
-      const name: string = child.name.toLowerCase();
+      child.geometry.computeVertexNormals();
 
-      /* Smooth normals */
-      child.geometry?.computeVertexNormals();
+      const name = child.name.toLowerCase();
 
-      /* ── Identify hands by name ── */
+      /* Detect hands by names */
+
       if (
         name.includes("hour") ||
         name.includes("short_hand") ||
@@ -235,107 +275,136 @@ export default function SteampunkWallClock(props: any) {
         minuteHand.current = child;
       }
 
-      if (name.includes("second") || name.includes("thin_hand")) {
+      if (
+        name.includes("second") ||
+        name.includes("thin_hand")
+      ) {
         secondHand.current = child;
       }
 
-      allMeshes.push(child);
+      /* Clone materials */
 
-      /* Clone materials so each instance is independent */
-      const mats = Array.isArray(child.material)
-        ? child.material.map((m: THREE.Material) => m.clone())
+      const materials = Array.isArray(child.material)
+        ? child.material.map((m) => m.clone())
         : [child.material.clone()];
 
-      child.material = Array.isArray(child.material) ? mats : mats[0];
+      child.material = Array.isArray(child.material)
+        ? materials
+        : materials[0];
 
-      mats.forEach((m: THREE.Material) => styleClockMaterial(m, name));
+      materials.forEach((material) =>
+        styleClockMaterial(material, name)
+      );
     });
 
-    /* Geometry-based fallback when names are unknown */
-    if (!hourHand.current && !minuteHand.current) {
-      const [h, m, s] = pickHandsByGeometry(allMeshes);
-      hourHand.current = h;
-      minuteHand.current = m;
-      secondHand.current = s;
+    /* Fallback geometry detection */
+
+    if (
+      !hourHand.current ||
+      !minuteHand.current
+    ) {
+      const detected = pickHandsByGeometry(allMeshes);
+
+      hourHand.current =
+        hourHand.current || detected.hour;
+
+      minuteHand.current =
+        minuteHand.current || detected.minute;
+
+      secondHand.current =
+        secondHand.current || detected.second;
     }
 
-    /* Apply hand materials & correct z-layering */
-    [hourHand.current, minuteHand.current, secondHand.current].forEach(
-      (hand, i) => {
-        if (!hand) return;
+    /* Apply custom materials */
 
-        const style = HAND_STYLES[i];
-        (hand as any).material = makeHandMaterial(
-          style.color,
-          style.emissive,
-          style.emissiveIntensity,
-          style.metalness,
-          style.roughness
-        );
+    const handConfigs = [
+      {
+        ref: hourHand.current,
+        material: HAND_MATERIALS.hour,
+        z: HAND_LAYER_OFFSET,
+      },
+      {
+        ref: minuteHand.current,
+        material: HAND_MATERIALS.minute,
+        z: HAND_LAYER_OFFSET * 2,
+      },
+      {
+        ref: secondHand.current,
+        material: HAND_MATERIALS.second,
+        z: HAND_LAYER_OFFSET * 3,
+      },
+    ];
 
-        hand.visible = true;
+    handConfigs.forEach(({ ref, material, z }) => {
+      if (!ref) return;
 
-        /*
-         * ⚠️  FIXED: use a small LOCAL z offset so hour < minute < second
-         * are stacked correctly on the dial face, but the offset is tiny
-         * enough that they never poke through objects in front of the clock.
-         * renderOrder is left at 0 (default) so the depth buffer sorts
-         * the clock normally against the rest of the scene.
-         */
-        hand.renderOrder = 0;
-        hand.position.z += 0.004 + i * 0.003;
-      }
-    );
+      const mesh = ref as THREE.Mesh;
+
+      mesh.material = createHandMaterial(material);
+
+      mesh.renderOrder = 1;
+
+      mesh.position.z += z;
+    });
   }, [clock]);
 
-  /* ── Animate hands every frame ── */
-  useFrame(() => {
-    const angle = getCurrentClockAngles();
+  /* ─────────────────────────────────────────────
+     ANIMATION
+  ───────────────────────────────────────────── */
 
-    if (hourHand.current) hourHand.current.rotation.z = angle.hour;
-    if (minuteHand.current) minuteHand.current.rotation.z = angle.minute;
-    if (secondHand.current) secondHand.current.rotation.z = angle.second;
+  useFrame(() => {
+    const angles = getClockAngles();
+
+    if (hourHand.current) {
+      hourHand.current.rotation.z = angles.hour;
+    }
+
+    if (minuteHand.current) {
+      minuteHand.current.rotation.z = angles.minute;
+    }
+
+    if (secondHand.current) {
+      secondHand.current.rotation.z = angles.second;
+    }
   });
 
   /* ─────────────────────────────────────────────
      RENDER
-     Lighting tuned for a realistic steampunk look:
-       • warm key light (candle / Edison bulb)
-       • cool dim fill (ambient bounce)
-       • subtle rim from above-right
   ───────────────────────────────────────────── */
+
   return (
     <group {...props}>
-      <primitive object={clock} position={modelPosition} scale={modelScale} />
+      <primitive
+        object={clock}
+        position={modelPosition}
+        scale={modelScale}
+      />
 
-      {/* Warm key – simulates nearby Edison / gas lamp */}
+      {/* Warm key light */}
       <pointLight
+        position={[0, 0.1, 0.55]}
         intensity={1.6}
         distance={3.5}
         decay={2}
-        position={[0, 0.1, 0.55]}
         color="#f5c97a"
-        castShadow={false}
       />
 
-      {/* Cool ambient fill – bounced room light */}
+      {/* Ambient cool fill */}
       <pointLight
+        position={[-0.6, 0.3, 0.8]}
         intensity={0.35}
         distance={4}
         decay={2}
-        position={[-0.6, 0.3, 0.8]}
         color="#c8d8e8"
-        castShadow={false}
       />
 
-      {/* Rim light from above – depth / realism */}
+      {/* Rim light */}
       <pointLight
+        position={[0.4, 1, 0.3]}
         intensity={0.5}
         distance={3}
         decay={2}
-        position={[0.4, 1.0, 0.3]}
         color="#ffe8c0"
-        castShadow={false}
       />
     </group>
   );

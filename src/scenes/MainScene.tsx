@@ -73,7 +73,7 @@ export default function MainScene() {
         intensity={1.6}
         castShadow
         color="#fff8f0"
-        shadow-mapSize={[2048, 2048]}
+        shadow-mapSize={[512, 512]}
         shadow-bias={-0.0004}
       />
 
@@ -129,7 +129,7 @@ export default function MainScene() {
 
         <Particles />
 
-        <Environment preset="studio" />
+        <Environment preset="city" />
       </Suspense>
 
       {/* ─── Post Processing ─────────────────────────────────────────── */}
@@ -138,7 +138,7 @@ export default function MainScene() {
         <Bloom
           luminanceThreshold={1}
           mipmapBlur
-          intensity={0.22}
+          intensity={0.12}
           radius={0.42}
         />
 
@@ -150,7 +150,7 @@ export default function MainScene() {
           darkness={0.82}
         />
 
-        <ChromaticAberration offset={[0.0003, 0.0003]} />
+        <ChromaticAberration offset={[0.0001, 0.0001]} />
       </EffectComposer>
 
       <color attach="background" args={['#030303']} />

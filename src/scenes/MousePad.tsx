@@ -2,7 +2,7 @@ import React, { useLayoutEffect, useMemo } from 'react';
 import { useGLTF } from '@react-three/drei';
 import * as THREE from 'three';
 
-const MOUSEPAD_MODEL = '/models/silver_crest_gaming_mousepad.glb';
+const MOUSEPAD_MODEL = '/models/silver_crest_gaming_mousepad-transformed.glb';
 
 const PAD_WIDTH = 0.95;
 const DESK_CLEARANCE = 0.014;

@@ -2,8 +2,8 @@ import React, { useLayoutEffect, useMemo } from 'react';
 import { useGLTF } from '@react-three/drei';
 import * as THREE from 'three';
 
-const CHAIR_MODEL = '/models/gaming_chair.glb';
-const CHAIR_HEIGHT = 4.5;
+const CHAIR_MODEL = '/models/gaming_chair-transformed.glb';
+const CHAIR_HEIGHT = 4.9;
 const FLOOR_CLEARANCE = 0.015;
 
 /* ─── Material helpers ──────────────────────────────────────────── */

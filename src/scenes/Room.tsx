@@ -19,6 +19,8 @@ import Headset from './HeadSet';
 import HeadsetStand from './Stand';
 import Mug from './CoffeeMug';
 import BookShelf from './BookShelf';
+import IvyPlant from './PlantPot';
+import SuperCar from './Car1';
 
 function Painting() {
   // Using a stunning ethereal abstract piece that matches the "deity" vibe (Blue/Gold/Divine)
@@ -283,9 +285,19 @@ export default function Room() {
       <Carpet position={[-0.15, 0, 0.05]} />
       <Chair position={[2.5, 0, 3]} rotation = {[0, -2.5, 0]}/>
       <BookShelf
-        position={[10.5, -0.1, -3.4]}
+        position={[10.5, -0.1, -3.1]}
         rotation={[0, 1.15, 0]}
         scale={2.9}
+      />
+      <IvyPlant
+        position={[10.7, 5.35, -3.1]}
+        rotation={[0, 1.15, 0]}
+        scale={1.5}
+      />
+      <SuperCar 
+        position={[9.2, 4.35, -2.15]} 
+        rotation={[0, 3, 0]}
+        scale={0.21}
       />
     </group>
   );
