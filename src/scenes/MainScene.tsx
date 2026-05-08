@@ -5,6 +5,8 @@ import {
   PerspectiveCamera,
   Environment,
   ContactShadows,
+  AdaptiveDpr,
+  AdaptiveEvents,
 } from '@react-three/drei';
 import {
   EffectComposer,
@@ -25,20 +27,14 @@ function CinematicCamera() {
     state.camera.lookAt(0, 3, 0);
   });
 
-  return (
-    <PerspectiveCamera
-      ref={cameraRef}
-      makeDefault
-      position={[0, 0, 8.5]}
-      fov={45}
-    />
-  );
+  return <PerspectiveCamera ref={cameraRef} makeDefault position={[-4, 3, 8.5]} fov={45} />;
 }
 
 export default function MainScene() {
   return (
     <Canvas
       shadows
+      dpr={[1, 1.5]}
       gl={{
         antialias: false,
         stencil: false,
@@ -46,6 +42,9 @@ export default function MainScene() {
       }}
     >
       <CinematicCamera />
+
+      <AdaptiveDpr pixelated />
+      <AdaptiveEvents />
 
       <OrbitControls
         enablePan={false}

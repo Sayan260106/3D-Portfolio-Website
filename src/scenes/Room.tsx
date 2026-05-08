@@ -21,6 +21,8 @@ import Mug from './CoffeeMug';
 import BookShelf from './BookShelf';
 import IvyPlant from './PlantPot';
 import SuperCar from './Car1';
+import Cushion from './CushionChair';
+import AstonMartinAMR23 from './Car2';
 
 function Painting() {
   // Using a stunning ethereal abstract piece that matches the "deity" vibe (Blue/Gold/Divine)
@@ -261,7 +263,7 @@ export default function Room() {
 
       <group position={[0, 0.5, 0]}>
         <Computer position={[-2.6, 2.2, -0.1]} rotation={[0, -2, 0]}/>
-        <Monitor position={[0, 2.46, -0.7]} />
+        <Monitor position={[0, 2.46, -1.3]} rotation={[0, 0, 0]}/>
         <Speaker position={[-2.3, 2.44, 0.2]} rotation={[0, 0.2, 0]} />
         <Speaker position={[2.3, 2.44, 0.2]} rotation={[0, -0.2, 0]} />
         <Keyboard position={[0, 2.43, 1.6]} />
@@ -295,9 +297,19 @@ export default function Room() {
         scale={1.5}
       />
       <SuperCar 
-        position={[9.2, 4.35, -2.15]} 
+        position={[9.27, 4.35, -2.15]} 
         rotation={[0, 3, 0]}
         scale={0.21}
+      />
+      <AstonMartinAMR23 
+        position={[9.82, 1.85, -2.98]} 
+        rotation={[0, -0.6, 0]}
+        scale={0.21}
+      />
+      <Cushion 
+        position={[12, 0.01, 3]} 
+        rotation={[0, -2.5, 0]} 
+        scale={0.75} 
       />
     </group>
   );
