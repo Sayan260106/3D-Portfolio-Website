@@ -1,28 +1,34 @@
 import React, { useEffect, useMemo, useRef } from 'react';
+import { Suspense } from 'react';
 import * as THREE from 'three';
 import { useTexture } from '@react-three/drei';
-import Computer from './Computer';
-import Monitor from './Monitor';
-import Lamp from './Lamp';
-import Keyboard from './Keyboard';
-import Mouse from './Mouse';
-import Plant from './Plant';
-import WallPlant from './WallPlant';
-import MousePad from './MousePad';
-import Carpet from './Carpet';
-import Speaker from './Speaker';
-import Wires from './Wires';
-import ShowPiece from './ShowPiece';
-import SteampunkWallClock, { WALL_CLOCK_PLACEMENT } from './WallClock';
-import Chair from './Chair';
-import Headset from './HeadSet';
-import HeadsetStand from './Stand';
-import Mug from './CoffeeMug';
-import BookShelf from './BookShelf';
-import IvyPlant from './PlantPot';
-import SuperCar from './Car1';
-import Cushion from './CushionChair';
-import AstonMartinAMR23 from './Car2';
+const Computer = React.lazy(() => import('./Computer'));
+const Monitor = React.lazy(() => import('./Monitor'));
+const Lamp = React.lazy(() => import ('./Lamp'));
+const Keyboard = React.lazy(() => import ('./Keyboard'));
+const Mouse = React.lazy(() => import ('./Mouse'));
+const Plant = React.lazy(() => import ('./Plant'));
+const WallPlant = React.lazy(() => import ('./WallPlant'));
+const MousePad = React.lazy(() => import ('./MousePad'));
+const Carpet = React.lazy(() => import ('./Carpet'));
+const Speaker = React.lazy(() => import ('./Speaker'));
+const Wires = React.lazy(() => import ('./Wires'));
+const ShowPiece = React.lazy(() => import ('./ShowPiece'));
+const Chair = React.lazy(() => import ('./Chair'));
+const Headset = React.lazy(() => import ('./HeadSet'));
+const HeadsetStand = React.lazy(() => import ('./Stand'));
+const Mug = React.lazy(() => import ('./CoffeeMug'));
+const BookShelf = React.lazy(() => import ('./BookShelf'));
+const IvyPlant = React.lazy(() => import ('./PlantPot'));
+const SuperCar = React.lazy(() => import ('./Car1'));
+const Cushion = React.lazy(() => import ('./CushionChair'));
+const AstonMartinAMR23 = React.lazy(() => import ('./Car2'));
+const SteampunkWallClock = React.lazy(
+  () => import('./WallClock')
+);
+
+import { WALL_CLOCK_PLACEMENT } from './WallClock';
+
 
 function Painting() {
   // Using a stunning ethereal abstract piece that matches the "deity" vibe (Blue/Gold/Divine)
@@ -204,7 +210,13 @@ export default function Room() {
       </group>
 
       {/* Wall Clock */}
-      <SteampunkWallClock {...WALL_CLOCK_PLACEMENT}/>
+      <Suspense fallback={null}>
+        <SteampunkWallClock
+          position={WALL_CLOCK_PLACEMENT.position}
+          rotation={WALL_CLOCK_PLACEMENT.rotation}
+          scale={WALL_CLOCK_PLACEMENT.scale}
+        />
+      </Suspense>
 
       {/* Architectural Light Bar (Horizontal) - Moved from desk to wall */}
       <group position={[0, 1.5, -3.95]}>
