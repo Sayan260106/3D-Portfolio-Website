@@ -1,9 +1,14 @@
 export interface WindowInstance {
-  isMaximized: any;
   id: string;
+
   title: string;
+
   isOpen: boolean;
+
   isMinimized: boolean;
+
+  isMaximized: boolean;
+
   zIndex: number;
 
   appId?: string;

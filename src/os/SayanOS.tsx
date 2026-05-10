@@ -213,7 +213,7 @@ export default function SayanOS({
               <AnimatePresence>
                 {windows.map((window) => (
                   <WindowFrame key={window.id} window={window}>
-                    <AppRenderer appId={window.appId} />
+                    <AppRenderer appId={window.appId ?? 'unknown'} />
                   </WindowFrame>
                 ))}
               </AnimatePresence>
