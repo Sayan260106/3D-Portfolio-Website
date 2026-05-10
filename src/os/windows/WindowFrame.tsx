@@ -204,15 +204,15 @@ export default function WindowFrame({
         >
           {/* Title Bar */}
           <div className="h-10 flex items-center justify-between px-4 bg-white/5 cursor-default select-none border-b border-white/5">
-            <div className="handle flex items-center gap-2">
+            {/* Drag handle area: the whole left+center title region, excluding the control buttons */}
+            <div className="handle flex items-center gap-2 flex-1 min-w-0">
               <div className="w-3 h-3 rounded-full bg-gold/50" />
-
-              <span className="text-xs font-medium text-white/70 tracking-wide uppercase">
+              <span className="text-xs font-medium text-white/70 tracking-wide uppercase truncate">
                 {window.title}
               </span>
             </div>
 
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-2" aria-label="window-controls">
               {/* Minimize */}
               <button
                 onPointerDown={(e) => {
