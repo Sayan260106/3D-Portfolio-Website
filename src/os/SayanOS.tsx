@@ -1,5 +1,5 @@
 import { motion, AnimatePresence } from 'motion/react';
-import { useEffect, useState, Suspense, lazy } from 'react';
+import { useEffect, useRef, useState, Suspense, lazy } from 'react';
 import { useOSStore } from './state/useOSStore';
 import { cn } from '../lib/utils';
 import { User, Lock as LockIcon } from 'lucide-react';
@@ -155,9 +155,25 @@ function LockScreen() {
   );
 }
 
-export default function SayanOS() {
+export default function SayanOS({
+  onReady,
+}: {
+  onReady?: () => void;
+}) {
   const { isBooted, isLocked } = useOSStore();
   const windows = useOSStore(state => state.windows);
+  const didNotifyReady = useRef(false);
+
+  useEffect(() => {
+    if (!isBooted || didNotifyReady.current) return;
+
+    didNotifyReady.current = true;
+    const frame = requestAnimationFrame(() => {
+      onReady?.();
+    });
+
+    return () => cancelAnimationFrame(frame);
+  }, [isBooted, onReady]);
 
   return (
     <div className="absolute inset-0 pointer-events-none select-none overflow-hidden">

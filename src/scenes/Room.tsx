@@ -70,10 +70,16 @@ function PaintingSpotLight() {
 
 interface RoomProps {
   setMonitorHovered?: (value: boolean) => void;
+  onMonitorReady?: () => void;
+  monitorFocused?: boolean;
+  onMonitorFocus?: () => void;
 }
 
 export default function Room({
   setMonitorHovered,
+  onMonitorReady,
+  monitorFocused,
+  onMonitorFocus,
 }: RoomProps) {
   return (
     <group>
@@ -285,6 +291,9 @@ export default function Room({
           position={[0, 2.46, -1.3]}
           rotation={[0, 0, 0]}
           setMonitorHovered={setMonitorHovered}
+          onScreenReady={onMonitorReady}
+          monitorFocused={monitorFocused}
+          onFocusRequest={onMonitorFocus}
         />
         <Speaker position={[-2.3, 2.44, 0.2]} rotation={[0, 0.2, 0]} />
         <Speaker position={[2.3, 2.44, 0.2]} rotation={[0, -0.2, 0]} />

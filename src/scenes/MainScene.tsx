@@ -3,6 +3,7 @@ import React, {
   useRef,
   useState,
   useEffect,
+  useMemo,
 } from 'react';
 
 import { Canvas, useFrame } from '@react-three/fiber';
@@ -25,7 +26,7 @@ import {
   ChromaticAberration,
 } from '@react-three/postprocessing';
 
-import { AnimatePresence, motion } from 'motion/react';
+import { motion } from 'motion/react';
 
 import * as THREE from 'three';
 
@@ -34,6 +35,9 @@ const Room = React.lazy<
     setMonitorHovered: React.Dispatch<
       React.SetStateAction<boolean>
     >;
+    onMonitorReady?: () => void;
+    monitorFocused?: boolean;
+    onMonitorFocus?: () => void;
   }>
 >(() => import('./Room'));
 const Particles = React.lazy(() => import('./Particles'));
@@ -52,75 +56,56 @@ const INITIAL_CAMERA_POSITION: [
   number,
 ] = [-1.55, 4.05, 7.35];
 
-const CAMERA_MIN_POLAR_ANGLE =
-  Math.PI / 2.75;
+const MONITOR_CAMERA_POSITION: [
+  number,
+  number,
+  number,
+] = [0, 3.75, 7];
 
-const CAMERA_MAX_POLAR_ANGLE =
-  Math.PI / 2.04;
+const MONITOR_CAMERA_TARGET: [
+  number,
+  number,
+  number,
+] = [0, 2.82, 0.08];
 
-function SceneLoadOverlay() {
+type CameraIntent =
+  | 'free'
+  | 'monitor'
+  | 'overview';
+
+interface MainSceneProps {
+  onLoadProgress?: (progress: number) => void;
+  onAssetsReady?: () => void;
+  onMonitorReady?: () => void;
+}
+
+function SceneLoadStatus({
+  onLoadProgress,
+  onAssetsReady,
+}: Pick<
+  MainSceneProps,
+  'onLoadProgress' | 'onAssetsReady'
+>) {
   const { active, progress } = useProgress();
-  const [isVisible, setIsVisible] = useState(true);
   const pct = Math.min(100, Math.round(progress));
+  const didNotifyReady = useRef(false);
 
   useEffect(() => {
-    if (active || progress < 100) {
-      setIsVisible(true);
-      return;
-    }
+    onLoadProgress?.(pct);
+  }, [onLoadProgress, pct]);
+
+  useEffect(() => {
+    if (active || progress < 100 || didNotifyReady.current) return;
 
     const timer = setTimeout(() => {
-      setIsVisible(false);
-    }, 450);
+      didNotifyReady.current = true;
+      onAssetsReady?.();
+    }, 300);
 
     return () => clearTimeout(timer);
-  }, [active, progress]);
+  }, [active, onAssetsReady, progress]);
 
-  return (
-    <AnimatePresence>
-      {isVisible && (
-        <motion.div
-          initial={{ opacity: 1 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          transition={{ duration: 0.5, ease: 'easeOut' }}
-          className="absolute inset-0 z-50 flex flex-col items-center justify-center bg-[#030303] pointer-events-none"
-        >
-          <div className="w-56 space-y-5 text-center">
-            <div className="relative mx-auto size-28">
-              <div className="absolute inset-0 rounded-full border border-[#c5a059]/10" />
-              <div className="absolute inset-3 rounded-full border border-[#c5a059]/20" />
-              <motion.div
-                className="absolute inset-0 rounded-full border-t border-[#c5a059]"
-                animate={{ rotate: 360 }}
-                transition={{
-                  duration: 1.6,
-                  repeat: Infinity,
-                  ease: 'linear',
-                }}
-              />
-              <div className="absolute inset-0 flex items-center justify-center text-[#c5a059] luxury-title text-3xl">
-                {pct}
-              </div>
-            </div>
-
-            <div className="space-y-3">
-              <div className="h-px bg-white/5 overflow-hidden">
-                <motion.div
-                  className="h-full bg-[#c5a059]"
-                  animate={{ width: `${pct}%` }}
-                  transition={{ duration: 0.25, ease: 'easeOut' }}
-                />
-              </div>
-              <div className="text-[#c5a059]/50 luxury-mono text-[10px] tracking-[0.4em] uppercase">
-                Loading Workspace
-              </div>
-            </div>
-          </div>
-        </motion.div>
-      )}
-    </AnimatePresence>
-  );
+  return null;
 }
 
 /* =========================================================
@@ -130,9 +115,11 @@ function SceneLoadOverlay() {
 function CinematicCamera({
   cinematicEnabled,
   monitorHovered,
+  cameraIntent,
 }: {
   cinematicEnabled: boolean;
   monitorHovered: boolean;
+  cameraIntent: CameraIntent;
 }) {
   const basePosition = useRef(
     new THREE.Vector3(
@@ -157,7 +144,8 @@ function CinematicCamera({
     /* Stop cinematic motion while interacting */
     if (
       !cinematicEnabled ||
-      monitorHovered
+      monitorHovered ||
+      cameraIntent !== 'free'
     ) {
       return;
     }
@@ -207,7 +195,78 @@ function CinematicCamera({
   );
 }
 
-export default function MainScene() {
+function CameraFocusRig({
+  intent,
+  controlsRef,
+  onOverviewSettled,
+}: {
+  intent: CameraIntent;
+  controlsRef: React.MutableRefObject<any>;
+  onOverviewSettled: () => void;
+}) {
+  const monitorPosition = useMemo(
+    () => new THREE.Vector3(...MONITOR_CAMERA_POSITION),
+    []
+  );
+  const monitorTarget = useMemo(
+    () => new THREE.Vector3(...MONITOR_CAMERA_TARGET),
+    []
+  );
+  const overviewPosition = useMemo(
+    () => new THREE.Vector3(...INITIAL_CAMERA_POSITION),
+    []
+  );
+  const overviewTarget = useMemo(
+    () => new THREE.Vector3(...MONITOR_FOCUS),
+    []
+  );
+
+  useFrame((state) => {
+    if (intent === 'free') return;
+
+    const targetPosition =
+      intent === 'monitor'
+        ? monitorPosition
+        : overviewPosition;
+
+    const targetLookAt =
+      intent === 'monitor'
+        ? monitorTarget
+        : overviewTarget;
+
+    state.camera.position.lerp(targetPosition, 0.085);
+
+    if (controlsRef.current?.target) {
+      controlsRef.current.target.lerp(targetLookAt, 0.1);
+      controlsRef.current.update();
+    } else {
+      state.camera.lookAt(targetLookAt);
+    }
+
+    const positionSettled =
+      state.camera.position.distanceTo(targetPosition) < 0.035;
+
+    const targetSettled = controlsRef.current?.target
+      ? controlsRef.current.target.distanceTo(targetLookAt) < 0.035
+      : true;
+
+    if (
+      intent === 'overview' &&
+      positionSettled &&
+      targetSettled
+    ) {
+      onOverviewSettled();
+    }
+  });
+
+  return null;
+}
+
+export default function MainScene({
+  onLoadProgress,
+  onAssetsReady,
+  onMonitorReady,
+}: MainSceneProps) {
   /* =========================================================
      STATES
   ========================================================= */
@@ -224,6 +283,14 @@ export default function MainScene() {
   /* NEW */
   const [monitorHovered, setMonitorHovered] =
     useState(false);
+
+  const [monitorFocused, setMonitorFocused] =
+    useState(false);
+
+  const [cameraIntent, setCameraIntent] =
+    useState<CameraIntent>('free');
+
+  const controlsRef = useRef<any>(null);
 
   /* =========================================================
      TIMERS
@@ -262,6 +329,8 @@ export default function MainScene() {
   ========================================================= */
 
   const handleInteractionStart = () => {
+    if (cameraIntent !== 'free') return;
+
     setCinematicEnabled(false);
 
     if (idleTimerRef.current) {
@@ -274,10 +343,44 @@ export default function MainScene() {
   ========================================================= */
 
   const handleInteractionEnd = () => {
+    if (cameraIntent !== 'free') return;
+
     idleTimerRef.current = setTimeout(() => {
       setCinematicEnabled(true);
     }, 180000);
   };
+
+  const focusMonitor = () => {
+    setMonitorFocused(true);
+    setMonitorHovered(true);
+    setCinematicEnabled(false);
+    setCameraIntent('monitor');
+
+    if (idleTimerRef.current) {
+      clearTimeout(idleTimerRef.current);
+    }
+  };
+
+  const exitMonitorFocus = () => {
+    setMonitorFocused(false);
+    setMonitorHovered(false);
+    setCinematicEnabled(false);
+    setCameraIntent('overview');
+  };
+
+  useEffect(() => {
+    const handleKeyDown = (event: KeyboardEvent) => {
+      if (event.key !== 'Escape') return;
+
+      exitMonitorFocus();
+    };
+
+    window.addEventListener('keydown', handleKeyDown);
+
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+    };
+  }, []);
 
   /* =========================================================
      CLEANUP
@@ -300,7 +403,10 @@ export default function MainScene() {
       transition={{ duration: 1.4 }}
       className="relative w-full h-full"
     >
-      <SceneLoadOverlay />
+      <SceneLoadStatus
+        onLoadProgress={onLoadProgress}
+        onAssetsReady={onAssetsReady}
+      />
 
       <Canvas
         shadows
@@ -322,6 +428,15 @@ export default function MainScene() {
           monitorHovered={
             monitorHovered
           }
+          cameraIntent={cameraIntent}
+        />
+
+        <CameraFocusRig
+          intent={cameraIntent}
+          controlsRef={controlsRef}
+          onOverviewSettled={() => {
+            setCameraIntent('free');
+          }}
         />
 
         {/* =====================================================
@@ -336,7 +451,11 @@ export default function MainScene() {
         ===================================================== */}
 
         <OrbitControls
-          enabled={!monitorHovered}
+          ref={controlsRef}
+          enabled={
+            !monitorHovered &&
+            cameraIntent === 'free'
+          }
           enablePan={false}
           minDistance={2.15}
           maxDistance={19}
@@ -415,6 +534,15 @@ export default function MainScene() {
             <Room
               setMonitorHovered={
                 setMonitorHovered
+              }
+              onMonitorReady={
+                onMonitorReady
+              }
+              monitorFocused={
+                monitorFocused
+              }
+              onMonitorFocus={
+                focusMonitor
               }
             />
 
