@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { motion } from 'motion/react';
-import { useBootStore } from '../store/useBootStore';
+import { useBootStore } from '../../store/useBootStore';
 
 export default function BootScreen() {
   const { setBooted, setBooting } = useBootStore();

@@ -14,6 +14,7 @@ import {
   ContactShadows,
   AdaptiveDpr,
   AdaptiveEvents,
+  useProgress,
 } from '@react-three/drei';
 
 import {
@@ -24,75 +25,184 @@ import {
   ChromaticAberration,
 } from '@react-three/postprocessing';
 
-import { motion } from 'framer-motion';
+import { AnimatePresence, motion } from 'motion/react';
 
 import * as THREE from 'three';
 
-const Room = React.lazy(() => import('./Room'));
+const Room = React.lazy<
+  React.ComponentType<{
+    setMonitorHovered: React.Dispatch<
+      React.SetStateAction<boolean>
+    >;
+  }>
+>(() => import('./Room'));
 const Particles = React.lazy(() => import('./Particles'));
 
 import Loader from './Loader';
 
+const MONITOR_FOCUS: [number, number, number] = [
+  0,
+  3.62,
+  -0.55,
+];
+
+const INITIAL_CAMERA_POSITION: [
+  number,
+  number,
+  number,
+] = [-1.55, 4.05, 7.35];
+
+const CAMERA_MIN_POLAR_ANGLE =
+  Math.PI / 2.75;
+
+const CAMERA_MAX_POLAR_ANGLE =
+  Math.PI / 2.04;
+
+function SceneLoadOverlay() {
+  const { active, progress } = useProgress();
+  const [isVisible, setIsVisible] = useState(true);
+  const pct = Math.min(100, Math.round(progress));
+
+  useEffect(() => {
+    if (active || progress < 100) {
+      setIsVisible(true);
+      return;
+    }
+
+    const timer = setTimeout(() => {
+      setIsVisible(false);
+    }, 450);
+
+    return () => clearTimeout(timer);
+  }, [active, progress]);
+
+  return (
+    <AnimatePresence>
+      {isVisible && (
+        <motion.div
+          initial={{ opacity: 1 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.5, ease: 'easeOut' }}
+          className="absolute inset-0 z-50 flex flex-col items-center justify-center bg-[#030303] pointer-events-none"
+        >
+          <div className="w-56 space-y-5 text-center">
+            <div className="relative mx-auto size-28">
+              <div className="absolute inset-0 rounded-full border border-[#c5a059]/10" />
+              <div className="absolute inset-3 rounded-full border border-[#c5a059]/20" />
+              <motion.div
+                className="absolute inset-0 rounded-full border-t border-[#c5a059]"
+                animate={{ rotate: 360 }}
+                transition={{
+                  duration: 1.6,
+                  repeat: Infinity,
+                  ease: 'linear',
+                }}
+              />
+              <div className="absolute inset-0 flex items-center justify-center text-[#c5a059] luxury-title text-3xl">
+                {pct}
+              </div>
+            </div>
+
+            <div className="space-y-3">
+              <div className="h-px bg-white/5 overflow-hidden">
+                <motion.div
+                  className="h-full bg-[#c5a059]"
+                  animate={{ width: `${pct}%` }}
+                  transition={{ duration: 0.25, ease: 'easeOut' }}
+                />
+              </div>
+              <div className="text-[#c5a059]/50 luxury-mono text-[10px] tracking-[0.4em] uppercase">
+                Loading Workspace
+              </div>
+            </div>
+          </div>
+        </motion.div>
+      )}
+    </AnimatePresence>
+  );
+}
+
 /* =========================================================
-   CINEMATIC CAMERA SYSTEM
-   ---------------------------------------------------------
-   INITIAL LOAD:
-   → cinematic motion active
-
-   USER INTERACTS:
-   → cinematic disabled
-   → full OrbitControls enabled
-
-   USER IDLE 3 MIN:
-   → cinematic resumes
-   → FROM CURRENT CAMERA POSITION
+   CINEMATIC CAMERA
 ========================================================= */
 
 function CinematicCamera({
   cinematicEnabled,
+  monitorHovered,
 }: {
   cinematicEnabled: boolean;
+  monitorHovered: boolean;
 }) {
-  const cameraRef = useRef<THREE.PerspectiveCamera>(null!);
+  const basePosition = useRef(
+    new THREE.Vector3(
+      ...INITIAL_CAMERA_POSITION
+    )
+  );
 
   useFrame((state) => {
-    if (!cinematicEnabled) return;
+    const camera = state.camera;
 
-    const t = state.clock.getElapsedTime();
+    /* =====================================================
+      HARD CAMERA HEIGHT LIMIT
+    ===================================================== */
 
-    /* VERY subtle luxury motion */
-    const driftX = Math.sin(t * 0.12) * 0.02;
-    const floatY = Math.sin(t * 0.22) * 0.015;
+    const MAX_CAMERA_HEIGHT = 6.8;
+
+    /* Prevent camera crossing ceiling */
+    if (camera.position.y > MAX_CAMERA_HEIGHT) {
+      camera.position.y = MAX_CAMERA_HEIGHT;
+    }
+
+    /* Stop cinematic motion while interacting */
+    if (
+      !cinematicEnabled ||
+      monitorHovered
+    ) {
+      return;
+    }
+
+    const t =
+      state.clock.getElapsedTime();
+
+    /* Luxury cinematic movement */
+    const driftX =
+      Math.sin(t * 0.12) * 0.08;
+
+    const floatY =
+      Math.sin(t * 0.22) * 0.05;
 
     const zoom =
-      Math.sin(t * 0.15) * 0.04;
+      Math.sin(t * 0.15) * 0.12;
 
-    /* IMPORTANT:
-       ADD motion to CURRENT position
-       NOT fixed position
+    const targetPosition =
+      new THREE.Vector3(
+        basePosition.current.x +
+          driftX,
 
-       This allows cinematic mode
-       to resume FROM USER'S LAST VIEW
-    */
+        Math.min(
+          basePosition.current.y +
+            floatY,
+          MAX_CAMERA_HEIGHT
+        ),
 
-    state.camera.position.x +=
-      driftX * 0.015;
+        basePosition.current.z +
+          zoom
+      );
 
-    state.camera.position.y +=
-      floatY * 0.015;
+    camera.position.lerp(
+      targetPosition,
+      0.02
+    );
 
-    state.camera.position.z +=
-      zoom * 0.01;
-
-    state.camera.lookAt(0, 3, 0);
+    camera.lookAt(...MONITOR_FOCUS);
   });
 
   return (
     <PerspectiveCamera
-      ref={cameraRef}
       makeDefault
-      position={[-4, 3, 8.5]}
-      fov={45}
+      position={INITIAL_CAMERA_POSITION}
+      fov={38}
     />
   );
 }
@@ -108,17 +218,20 @@ export default function MainScene() {
   const [showParticles, setShowParticles] =
     useState(false);
 
-  /* TRUE initially → cinematic active */
   const [cinematicEnabled, setCinematicEnabled] =
     useState(true);
+
+  /* NEW */
+  const [monitorHovered, setMonitorHovered] =
+    useState(false);
 
   /* =========================================================
      TIMERS
   ========================================================= */
 
-  const idleTimerRef = useRef<NodeJS.Timeout | null>(
-    null
-  );
+  const idleTimerRef = useRef<
+    NodeJS.Timeout | null
+  >(null);
 
   /* =========================================================
      POST FX DELAY
@@ -145,14 +258,12 @@ export default function MainScene() {
   }, []);
 
   /* =========================================================
-     USER INTERACTION HANDLER
+     USER INTERACTION
   ========================================================= */
 
   const handleInteractionStart = () => {
-    /* Disable cinematic instantly */
     setCinematicEnabled(false);
 
-    /* Clear existing timer */
     if (idleTimerRef.current) {
       clearTimeout(idleTimerRef.current);
     }
@@ -163,10 +274,9 @@ export default function MainScene() {
   ========================================================= */
 
   const handleInteractionEnd = () => {
-    /* Start 3 minute idle timer */
     idleTimerRef.current = setTimeout(() => {
       setCinematicEnabled(true);
-    }, 180000); // 3 minutes
+    }, 180000);
   };
 
   /* =========================================================
@@ -176,7 +286,9 @@ export default function MainScene() {
   useEffect(() => {
     return () => {
       if (idleTimerRef.current) {
-        clearTimeout(idleTimerRef.current);
+        clearTimeout(
+          idleTimerRef.current
+        );
       }
     };
   }, []);
@@ -186,8 +298,10 @@ export default function MainScene() {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 1.4 }}
-      className="w-full h-full"
+      className="relative w-full h-full"
     >
+      <SceneLoadOverlay />
+
       <Canvas
         shadows
         dpr={[1, 1.5]}
@@ -202,7 +316,12 @@ export default function MainScene() {
         ===================================================== */}
 
         <CinematicCamera
-          cinematicEnabled={cinematicEnabled}
+          cinematicEnabled={
+            cinematicEnabled
+          }
+          monitorHovered={
+            monitorHovered
+          }
         />
 
         {/* =====================================================
@@ -217,20 +336,25 @@ export default function MainScene() {
         ===================================================== */}
 
         <OrbitControls
+          enabled={!monitorHovered}
           enablePan={false}
-          minDistance={5}
-          maxDistance={12}
-          minPolarAngle={Math.PI / 4}
-          maxPolarAngle={Math.PI / 2.1}
-          minAzimuthAngle={-Math.PI / 3}
-          maxAzimuthAngle={Math.PI / 3}
-          target={[0, 1.15, 0]}
+          minDistance={2.15}
+          maxDistance={19}
+          minPolarAngle={Math.PI / 3.1}
+          maxPolarAngle={Math.PI / 2.04}
+          minAzimuthAngle={
+            -Math.PI / 5
+          }
+          maxAzimuthAngle={
+            Math.PI / 5
+          }
+          target={MONITOR_FOCUS}
           enableDamping
           dampingFactor={0.05}
           autoRotate={false}
-
-          onStart={handleInteractionStart}
-
+          onStart={
+            handleInteractionStart
+          }
           onEnd={handleInteractionEnd}
         />
 
@@ -288,7 +412,11 @@ export default function MainScene() {
 
         <Suspense fallback={<Loader />}>
           <group position={[0, -1, 0]}>
-            <Room />
+            <Room
+              setMonitorHovered={
+                setMonitorHovered
+              }
+            />
 
             <ContactShadows
               opacity={0.55}
@@ -300,7 +428,9 @@ export default function MainScene() {
             />
           </group>
 
-          {showParticles && <Particles />}
+          {showParticles && (
+            <Particles />
+          )}
 
           <Environment preset="apartment" />
         </Suspense>
@@ -327,7 +457,10 @@ export default function MainScene() {
             />
 
             <ChromaticAberration
-              offset={[0.0001, 0.0001]}
+              offset={[
+                0.0001,
+                0.0001,
+              ]}
             />
           </EffectComposer>
         )}

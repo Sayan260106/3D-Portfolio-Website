@@ -1,6 +1,6 @@
 import React from 'react';
-import { useWindowStore } from '../store/useWindowStore';
-import Window from './Window';
+import { useWindowStore } from '../../store/useWindowStore';
+import Window from './WindowFrame';
 
 import { AnimatePresence } from 'motion/react';
 

@@ -1,14 +1,5 @@
 import { create } from 'zustand';
-
-export interface WindowInstance {
-  id: string;
-  title: string;
-  isOpen: boolean;
-  isMaximized: boolean;
-  isMinimized: boolean;
-  zIndex: number;
-  content: string;
-}
+import type { WindowInstance } from "../types/window";
 
 interface WindowState {
   windows: WindowInstance[];

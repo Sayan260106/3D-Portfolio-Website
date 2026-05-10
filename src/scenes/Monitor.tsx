@@ -1,9 +1,9 @@
 import React, { useLayoutEffect, useMemo } from "react";
 import { Html, useGLTF } from "@react-three/drei";
 import * as THREE from "three";
-import { motion } from "framer-motion";
+import { motion } from "motion/react";
 
-import Desktop from "../components/Desktop";
+import SayanOS from "../os/SayanOS";
 
 const MONITOR_MODEL =
   "/models/asus_pc_gaming_monitor-transformed.glb";
@@ -11,8 +11,26 @@ const MONITOR_MODEL =
 const MONITOR_HEIGHT = 3.2;
 const FLOOR_CLEARANCE = 0.015;
 
-export default function Monitor(props: any) {
+interface MonitorProps {
+  setMonitorHovered?: (
+    value: boolean
+  ) => void;
+}
+
+export default function Monitor({
+  setMonitorHovered,
+  ...props
+}: MonitorProps & any) {
   const { scene } = useGLTF(MONITOR_MODEL);
+
+  const claimMonitorInteraction = (
+    event:
+      | React.PointerEvent<HTMLDivElement>
+      | React.WheelEvent<HTMLDivElement>
+      | React.MouseEvent<HTMLDivElement>
+  ) => {
+    event.stopPropagation();
+  };
 
   const { monitor, modelScale, modelPosition } = useMemo(() => {
     const monitor = scene.clone(true);
@@ -201,6 +219,41 @@ export default function Monitor(props: any) {
       />
 
       {/* =====================================================
+         INTERACTION HIT AREA
+         THIS IS THE IMPORTANT PART
+      ===================================================== */}
+
+      <mesh
+        position={[0, 1.82, 0.79]}
+        rotation={[0, Math.PI, 0]}
+        onPointerEnter={(event) => {
+          event.stopPropagation();
+          setMonitorHovered?.(true)
+        }}
+        onPointerMove={(event) => {
+          event.stopPropagation();
+        }}
+        onPointerDown={(event) => {
+          event.stopPropagation();
+        }}
+        onPointerUp={(event) => {
+          event.stopPropagation();
+        }}
+        onPointerLeave={(event) => {
+          event.stopPropagation();
+          setMonitorHovered?.(false)
+        }}
+      >
+        <planeGeometry args={[2.7, 1.55]} />
+
+        <meshBasicMaterial
+          transparent
+          opacity={0}
+          depthWrite={false}
+        />
+      </mesh>
+
+      {/* =====================================================
          REALISTIC HTML SCREEN
       ===================================================== */}
 
@@ -214,6 +267,19 @@ export default function Monitor(props: any) {
         className="pointer-events-auto"
       >
         <motion.div
+          onPointerEnter={(event) => {
+            claimMonitorInteraction(event);
+            setMonitorHovered?.(true);
+          }}
+          onPointerMove={claimMonitorInteraction}
+          onPointerDown={claimMonitorInteraction}
+          onPointerUp={claimMonitorInteraction}
+          onClick={claimMonitorInteraction}
+          onWheel={claimMonitorInteraction}
+          onPointerLeave={(event) => {
+            claimMonitorInteraction(event);
+            setMonitorHovered?.(false);
+          }}
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{
@@ -247,14 +313,13 @@ export default function Monitor(props: any) {
           ================================================= */}
 
           <div className="absolute inset-[10px] rounded-[12px] overflow-hidden">
-            <Desktop />
+            <SayanOS />
           </div>
 
           {/* =================================================
-             REFLECTION LAYERS
+             REFLECTIONS
           ================================================= */}
 
-          {/* top reflection */}
           <div
             className="
               absolute
@@ -273,7 +338,6 @@ export default function Monitor(props: any) {
             "
           />
 
-          {/* glossy side streak */}
           <div
             className="
               absolute
@@ -288,7 +352,6 @@ export default function Monitor(props: any) {
             "
           />
 
-          {/* blue coating */}
           <div
             className="
               absolute
@@ -302,7 +365,6 @@ export default function Monitor(props: any) {
             "
           />
 
-          {/* vignette */}
           <div
             className="
               absolute
@@ -313,7 +375,6 @@ export default function Monitor(props: any) {
             "
           />
 
-          {/* subtle pixels */}
           <div
             className="absolute inset-0 opacity-[0.035] pointer-events-none"
             style={{
@@ -328,7 +389,6 @@ export default function Monitor(props: any) {
             }}
           />
 
-          {/* edge glow */}
           <div
             className="
               absolute
@@ -341,7 +401,6 @@ export default function Monitor(props: any) {
             "
           />
 
-          {/* subtle curvature illusion */}
           <div
             className="
               absolute
@@ -352,7 +411,6 @@ export default function Monitor(props: any) {
             "
           />
 
-          {/* lower ambient glow */}
           <div
             className="
               absolute

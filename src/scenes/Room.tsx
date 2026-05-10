@@ -68,7 +68,13 @@ function PaintingSpotLight() {
   );
 }
 
-export default function Room() {
+interface RoomProps {
+  setMonitorHovered?: (value: boolean) => void;
+}
+
+export default function Room({
+  setMonitorHovered,
+}: RoomProps) {
   return (
     <group>
       {/* Floor - Wider for a sense of space */}
@@ -275,7 +281,11 @@ export default function Room() {
 
       <group position={[0, 0.5, 0]}>
         <Computer position={[-2.6, 2.2, -0.1]} rotation={[0, -2, 0]}/>
-        <Monitor position={[0, 2.46, -1.3]} rotation={[0, 0, 0]}/>
+        <Monitor
+          position={[0, 2.46, -1.3]}
+          rotation={[0, 0, 0]}
+          setMonitorHovered={setMonitorHovered}
+        />
         <Speaker position={[-2.3, 2.44, 0.2]} rotation={[0, 0.2, 0]} />
         <Speaker position={[2.3, 2.44, 0.2]} rotation={[0, -0.2, 0]} />
         <Keyboard position={[0, 2.43, 1.6]} />

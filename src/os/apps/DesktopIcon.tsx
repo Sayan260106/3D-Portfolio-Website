@@ -1,6 +1,6 @@
 import React from 'react';
 import * as Icons from 'lucide-react';
-import { useWindowStore } from '../store/useWindowStore';
+import { useWindowStore } from '../../store/useWindowStore';
 import { motion } from 'motion/react';
 
 interface DesktopIconProps {

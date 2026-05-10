@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import MainScene from './scenes/MainScene';
-import BootScreen from './components/BootScreen';
+import BootScreen from './os/boot/BootScreen';
 import Loader from './components/Loader';
-import CRTOverlay from './components/CRTOverlay';
+import CRTOverlay from './os/effects/CRTOverlay';
 import { useBootStore } from './store/useBootStore';
 // import './styles/globals.css';
 
