@@ -1,87 +1,71 @@
 import { motion } from 'motion/react';
-import { ExternalLink, Github, Cpu, Globe, Layers } from 'lucide-react';
-import { cn } from '../../lib/utils';
+import { BarChart3, Beaker, Brain, Cpu, HeartPulse, Mic2, Trophy } from 'lucide-react';
+import { portfolioData } from '../../data/portfolio';
 
-const projects = [
-  {
-    title: "NeuroLink",
-    desc: "AI-driven neural interface for real-time data visualization.",
-    tech: ["Three.js", "React", "Rust"],
-    image: "https://images.unsplash.com/photo-1635070041078-e363dbe005cb?q=80&w=2070",
-    color: "from-blue-500/20"
-  },
-  {
-    title: "Quantum Ledger",
-    desc: "Distributed ledger system with post-quantum cryptography.",
-    tech: ["Go", "Solidity", "Web3"],
-    image: "https://images.unsplash.com/photo-1639322537228-f710d846310a?q=80&w=2078",
-    color: "from-amber-500/20"
-  },
-  {
-    title: "Lumina Engine",
-    desc: "High-performance ray-tracing engine built for the web.",
-    tech: ["WebGL", "GLSL", "WASM"],
-    image: "https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=1964",
-    color: "from-purple-500/20"
-  }
-];
+const projectIcons = [Beaker, HeartPulse, Trophy, BarChart3, Cpu, Mic2];
 
 export default function ProjectsApp() {
   return (
-    <div className="h-full bg-luxury-black overflow-y-auto custom-scrollbar p-8">
-      <div className="max-w-4xl mx-auto space-y-12">
-        <header className="space-y-4">
-          <div className="flex items-center gap-2 text-gold">
-            <Cpu size={18} />
-            <span className="text-[10px] font-mono uppercase tracking-[0.3em]">Arsenal</span>
+    <div className="h-full overflow-y-auto custom-scrollbar bg-[#08110c] text-[#f5efe1]">
+      <div className="mx-auto max-w-5xl space-y-10 px-8 py-10">
+        <header className="border-b border-[#c5a059]/20 pb-8">
+          <div className="mb-4 flex items-center gap-2 text-[#c5a059]">
+            <Brain size={18} />
+            <span className="font-mono text-[10px] uppercase tracking-[0.3em]">Selected Work</span>
           </div>
-          <h1 className="text-4xl font-serif italic text-white/90 font-bold">Selected Operational Missions</h1>
+          <h1 className="font-serif text-4xl font-semibold text-[#f8f1df]">Projects with practical polish.</h1>
+          <p className="mt-4 max-w-2xl leading-7 text-[#d8cfbb]">
+            A focused collection across virtual learning, habit design, wellness, data analysis,
+            prediction, and Python automation.
+          </p>
         </header>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {projects.map((project, i) => (
-            <motion.div
-              key={project.title}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: i * 0.1 }}
-              className={cn(
-                "group relative overflow-hidden rounded-2xl border border-white/5 bg-white/5 hover:border-gold/30 transition-all duration-500",
-                i === 0 && "md:col-span-2"
-              )}
-            >
-              <div className="aspect-video overflow-hidden">
-                <img 
-                  src={project.image} 
-                  alt={project.title}
-                  className="w-full h-full object-cover grayscale group-hover:grayscale-0 group-hover:scale-105 transition-all duration-700 opacity-60 group-hover:opacity-100"
-                />
-              </div>
-              
-              <div className="p-6 space-y-4">
-                <div className="flex items-center justify-between">
-                  <h3 className="text-xl font-medium text-white group-hover:text-gold transition-colors">{project.title}</h3>
-                  <div className="flex gap-3">
-                    <button className="text-white/40 hover:text-white transition-colors cursor-pointer"><Github size={18} /></button>
-                    <button className="text-white/40 hover:text-white transition-colors cursor-pointer"><ExternalLink size={18} /></button>
+        <div className="grid gap-5">
+          {portfolioData.projects.map((project, index) => {
+            const Icon = projectIcons[index] ?? Cpu;
+
+            return (
+              <motion.article
+                key={project.title}
+                initial={{ opacity: 0, y: 18 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: index * 0.05 }}
+                className="grid gap-5 border border-[#c5a059]/18 bg-[#f5efe1]/[0.035] p-5 transition-colors hover:border-[#c5a059]/45 md:grid-cols-[56px_1fr]"
+              >
+                <div className="flex h-14 w-14 items-center justify-center border border-[#c5a059]/25 bg-[#c5a059]/10 text-[#c5a059]">
+                  <Icon size={24} />
+                </div>
+                <div className="space-y-4">
+                  <div className="flex flex-wrap items-start justify-between gap-3">
+                    <div>
+                      <h2 className="font-serif text-2xl text-[#f8f1df]">{project.title}</h2>
+                      <p className="mt-1 text-sm text-[#d8cfbb]/80">{project.subtitle}</p>
+                    </div>
+                    <span className="border border-[#c5a059]/25 px-3 py-1 font-mono text-[10px] uppercase tracking-[0.18em] text-[#c5a059]">
+                      {project.period}
+                    </span>
+                  </div>
+
+                  <ul className="space-y-2 text-sm leading-6 text-[#d8cfbb]">
+                    {project.highlights.map((highlight) => (
+                      <li key={highlight} className="flex gap-3">
+                        <span className="mt-2 h-1.5 w-1.5 shrink-0 bg-[#c5a059]" />
+                        <span>{highlight}</span>
+                      </li>
+                    ))}
+                  </ul>
+
+                  <div className="flex flex-wrap gap-2">
+                    {project.tech.map((tech) => (
+                      <span key={tech} className="bg-[#f5efe1]/10 px-3 py-1 text-[11px] text-[#efe6d0]">
+                        {tech}
+                      </span>
+                    ))}
                   </div>
                 </div>
-                
-                <p className="text-sm text-white/50 leading-relaxed">{project.desc}</p>
-                
-                <div className="flex flex-wrap gap-2 pt-2">
-                  {project.tech.map(t => (
-                    <span key={t} className="px-3 py-1 rounded-full bg-white/5 border border-white/10 text-[9px] font-mono text-white/40 uppercase tracking-widest">
-                      {t}
-                    </span>
-                  ))}
-                </div>
-              </div>
-
-              {/* Hover Glow */}
-              <div className={cn("absolute inset-0 bg-gradient-to-br opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none", project.color)} />
-            </motion.div>
-          ))}
+              </motion.article>
+            );
+          })}
         </div>
       </div>
     </div>

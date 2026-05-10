@@ -65,23 +65,22 @@ export default function StartMenu({ isOpen, onClose }: StartMenuProps) {
                 <div>
                   <h3 className="text-[10px] font-mono text-white/20 uppercase tracking-[0.3em] mb-4">Core Systems</h3>
                   <div className="grid grid-cols-3 gap-2">
-                    <PinnedApp icon={User} label="About" onClick={() => handleAppClick('about', 'Identity')} color="text-gold" />
-                    <PinnedApp icon={Cpu} label="Projects" onClick={() => handleAppClick('projects', 'Arsenal')} color="text-amber-400" />
+                    <PinnedApp icon={User} label="About" onClick={() => handleAppClick('about', 'About')} color="text-gold" />
+                    <PinnedApp icon={Cpu} label="Projects" onClick={() => handleAppClick('projects', 'Projects')} color="text-amber-400" />
                     <PinnedApp icon={Terminal} label="Terminal" onClick={() => handleAppClick('terminal', 'Sayan@Shell')} color="text-emerald-400" />
                     <PinnedApp icon={Folder} label="Archive" onClick={() => handleAppClick('explorer', 'Explorer')} color="text-blue-400" />
+                    <PinnedApp icon={Monitor} label="Resume" onClick={() => handleAppClick('resume', 'Resume')} color="text-emerald-300" />
                     <PinnedApp icon={Sparkles} label="Skills" onClick={() => handleAppClick('skills', 'Skills')} color="text-violet-300" />
                     <PinnedApp icon={GraduationCap} label="Education" onClick={() => handleAppClick('education', 'Education')} color="text-cyan-300" />
                     <PinnedApp icon={BadgeCheck} label="Certs" onClick={() => handleAppClick('certifications', 'Certifications')} color="text-lime-300" />
-                    <PinnedApp icon={Mail} label="Contact" onClick={() => handleAppClick('contact', 'Contact')} color="text-rose-300" />
-                    <PinnedApp icon={Gamepad2} label="Snake" onClick={() => handleAppClick('snake', 'Snake')} color="text-orange-300" />
                   </div>
                 </div>
 
                 <div>
                   <h3 className="text-[10px] font-mono text-white/20 uppercase tracking-[0.3em] mb-4">Recommended</h3>
                   <div className="space-y-1">
-                    <RecommendedItem icon={Github} label="View GitHub Source" sub="Explore the repository" />
-                    <RecommendedItem icon={Mail} label="Contact Sayan" sub="Initiate direct link" />
+                    <RecommendedItem icon={Github} label="GitHub" sub="Project archive" />
+                    <RecommendedItem icon={Mail} label="Contact Sayan" sub="Direct correspondence" />
                   </div>
                 </div>
               </div>

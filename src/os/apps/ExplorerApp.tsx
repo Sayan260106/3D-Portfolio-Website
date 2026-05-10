@@ -24,10 +24,10 @@ interface FileItem {
 
 const initialFiles: FileItem[] = [
   { name: 'Projects', type: 'folder', modified: '2 days ago' },
-  { name: 'Manifesto.pdf', type: 'file', size: '1.2 MB', modified: '1 week ago', icon: FileText },
+  { name: 'Sayan_Sinha_Resume.pdf', type: 'file', size: '1.2 MB', modified: 'Just now', icon: FileText },
   { name: 'Certificates', type: 'folder', modified: '1 month ago' },
-  { name: 'Identity_Shot.png', type: 'file', size: '4.5 MB', modified: '3 days ago', icon: ImageIcon },
-  { name: 'Arsenal.config', type: 'file', size: '2 KB', modified: 'Just now', icon: Cpu },
+  { name: 'LabZero_Archive.png', type: 'file', size: '4.5 MB', modified: 'Mar 2026', icon: ImageIcon },
+  { name: 'skills.index', type: 'file', size: '2 KB', modified: 'Just now', icon: Cpu },
 ];
 
 export default function ExplorerApp() {

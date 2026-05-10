@@ -42,10 +42,10 @@ export default function Desktop() {
   return (
     <div className="h-full w-full p-8 pointer-events-auto">
       <div className="grid grid-flow-col grid-rows-6 gap-2 w-fit">
-        <DesktopIcon appId="about" label="Identity" icon={User} color="text-gold" />
-        <DesktopIcon appId="projects" label="Arsenal" icon={Cpu} color="text-amber-400" />
+        <DesktopIcon appId="about" label="About" icon={User} color="text-gold" />
+        <DesktopIcon appId="projects" label="Projects" icon={Cpu} color="text-amber-400" />
         <DesktopIcon appId="explorer" label="Archive" icon={Folder} color="text-blue-400" />
-        <DesktopIcon appId="resume" label="Manifesto" icon={FileText} color="text-emerald-400" />
+        <DesktopIcon appId="resume" label="Resume" icon={FileText} color="text-emerald-400" />
         <DesktopIcon appId="skills" label="Skills" icon={Sparkles} color="text-violet-300" />
         <DesktopIcon appId="education" label="Education" icon={GraduationCap} color="text-cyan-300" />
         <DesktopIcon appId="certifications" label="Certs" icon={BadgeCheck} color="text-lime-300" />

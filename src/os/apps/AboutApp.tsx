@@ -1,82 +1,95 @@
 import { motion } from 'motion/react';
-import { User, Shield, Zap, Globe, Github, Linkedin, Mail } from 'lucide-react';
+import { BookOpen, Github, Linkedin, Mail, MapPin, Phone, Shield, Sparkles } from 'lucide-react';
+import { portfolioData } from '../../data/portfolio';
 
 export default function AboutApp() {
   return (
-    <div className="h-full bg-[#050505] text-white overflow-y-auto custom-scrollbar">
-      {/* Hero Section */}
-      <div className="relative h-[300px] flex items-center justify-center overflow-hidden border-b border-white/5">
-        <motion.div 
-          initial={{ opacity: 0, scale: 1.1 }}
-          animate={{ opacity: 0.3, scale: 1 }}
-          className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1614850715649-1d0106293bd1?q=80&w=2070')] bg-cover bg-center grayscale"
-        />
-        <div className="z-10 text-center px-6">
-          <motion.h1 
-            initial={{ y: 20, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            className="text-5xl font-serif font-bold italic tracking-tighter"
-          >
-            Sayan Sinha
-          </motion.h1>
-          <motion.p 
-            initial={{ y: 20, opacity: 0 }}
-            animate={{ y: 0, opacity: 1 }}
-            className="text-gold font-mono text-xs tracking-[0.3em] uppercase mt-4"
-          >
-            Creative Technologist • Digital Architect
-          </motion.p>
-        </div>
-      </div>
-
-      {/* Content */}
-      <div className="max-w-3xl mx-auto py-16 px-8 space-y-20">
-        {/* Intro */}
-        <section className="space-y-6">
-          <div className="flex items-center gap-3 text-gold mb-2">
-            <Shield size={18} />
-            <span className="text-[10px] font-mono uppercase tracking-[0.2em]">The Identity</span>
-          </div>
-          <h2 className="text-3xl font-serif italic">Crafting immersive digital experiences where technology meets art.</h2>
-          <p className="text-white/60 leading-relaxed font-light text-lg">
-            I specialize in bridging the gap between design and high-performance engineering. My work focuses on building 3D environments for the browser, creating tools that feel intuitive, and interfaces that are visually cinematic.
-          </p>
-        </section>
-
-        {/* Stats/Grid */}
-        <div className="grid grid-cols-2 gap-8">
-          <div className="p-6 rounded-2xl bg-white/5 border border-white/5 space-y-3">
-            <Zap className="text-gold" size={24} />
-            <h3 className="font-medium text-lg">Performance First</h3>
-            <p className="text-sm text-white/40">Optimizing 3D render loops for silky smooth frame rates across all devices.</p>
-          </div>
-          <div className="p-6 rounded-2xl bg-white/5 border border-white/5 space-y-3">
-            <Globe className="text-gold" size={24} />
-            <h3 className="font-medium text-lg">Global Vision</h3>
-            <p className="text-sm text-white/40">Collaborating with elite teams worldwide to push the boundaries of what is possible on the web.</p>
+    <div className="h-full overflow-y-auto custom-scrollbar bg-[#08110c] text-[#f5efe1]">
+      <section className="relative min-h-[340px] overflow-hidden border-b border-[#c5a059]/20">
+        <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1519681393784-d120267933ba?q=80&w=2070')] bg-cover bg-center opacity-25 grayscale" />
+        <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(8,17,12,0.98),rgba(8,17,12,0.82),rgba(8,17,12,0.55))]" />
+        <div className="relative z-10 flex min-h-[340px] items-center px-8 py-12">
+          <div className="max-w-3xl space-y-6">
+            <motion.p
+              initial={{ opacity: 0, y: 12 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="font-mono text-[10px] uppercase tracking-[0.32em] text-[#c5a059]"
+            >
+              Computer Science / AI / Web Craft
+            </motion.p>
+            <motion.h1
+              initial={{ opacity: 0, y: 16 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.08 }}
+              className="font-serif text-5xl font-semibold leading-tight text-[#f8f1df]"
+            >
+              {portfolioData.name}
+            </motion.h1>
+            <motion.p
+              initial={{ opacity: 0, y: 16 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.16 }}
+              className="max-w-2xl text-lg leading-8 text-[#d8cfbb]"
+            >
+              {portfolioData.about}
+            </motion.p>
           </div>
         </div>
+      </section>
 
-        {/* Contact Links */}
-        <section className="pt-10 border-t border-white/5">
-          <div className="flex flex-wrap gap-4">
-            <a href="#" className="flex items-center gap-2 px-5 py-2.5 rounded-full bg-white/5 hover:bg-white/10 transition-colors border border-white/10 text-sm">
-              <Github size={16} /> GitHub
-            </a>
-            <a href="#" className="flex items-center gap-2 px-5 py-2.5 rounded-full bg-white/5 hover:bg-white/10 transition-colors border border-white/10 text-sm">
-              <Linkedin size={16} /> LinkedIn
-            </a>
-            <a href="#" className="flex items-center gap-2 px-5 py-2.5 rounded-full bg-gold/10 hover:bg-gold/20 transition-colors border border-gold/20 text-sm text-gold">
-              <Mail size={16} /> Reach Out
-            </a>
+      <div className="mx-auto max-w-5xl space-y-12 px-8 py-12">
+        <section className="grid gap-5 md:grid-cols-3">
+          <Stat icon={Shield} label="Discipline" value={portfolioData.role} />
+          <Stat icon={Sparkles} label="Focus" value="Machine Learning & interactive web platforms" />
+          <Stat icon={MapPin} label="Base" value={portfolioData.location} />
+        </section>
+
+        <section className="grid gap-8 lg:grid-cols-[1.25fr_0.75fr]">
+          <div className="space-y-5">
+            <SectionTitle icon={BookOpen} label="Profile" />
+            <p className="text-base leading-8 text-[#d8cfbb]">
+              I enjoy building systems that make complex ideas easier to understand: virtual labs,
+              health support tools, data analysis notebooks, and small automation systems. The thread
+              running through the work is practical curiosity: learn the subject, make the interface
+              clear, and let the technology serve the person using it.
+            </p>
+          </div>
+          <div className="space-y-3 border-l border-[#c5a059]/20 pl-6">
+            <ContactRow icon={Mail} label={portfolioData.contact.email} href={`mailto:${portfolioData.contact.email}`} />
+            <ContactRow icon={Phone} label={portfolioData.contact.phone} href={`tel:${portfolioData.contact.phone.replace(/\s/g, '')}`} />
+            <ContactRow icon={Linkedin} label={portfolioData.contact.linkedin} href="#" />
+            <ContactRow icon={Github} label={portfolioData.contact.github} href="#" />
           </div>
         </section>
-      </div>
-
-      {/* Footer Decoration */}
-      <div className="h-40 flex items-center justify-center opacity-30 select-none pointer-events-none">
-        <span className="text-8xl font-serif italic font-bold">SAYAN</span>
       </div>
     </div>
+  );
+}
+
+function SectionTitle({ icon: Icon, label }: { icon: any; label: string }) {
+  return (
+    <div className="flex items-center gap-3 text-[#c5a059]">
+      <Icon size={17} />
+      <span className="font-mono text-[10px] uppercase tracking-[0.28em]">{label}</span>
+    </div>
+  );
+}
+
+function Stat({ icon: Icon, label, value }: { icon: any; label: string; value: string }) {
+  return (
+    <div className="border border-[#c5a059]/20 bg-[#f5efe1]/[0.04] p-5">
+      <Icon size={20} className="mb-5 text-[#c5a059]" />
+      <div className="font-mono text-[9px] uppercase tracking-[0.24em] text-[#c5a059]/70">{label}</div>
+      <div className="mt-2 font-serif text-lg leading-6 text-[#f8f1df]">{value}</div>
+    </div>
+  );
+}
+
+function ContactRow({ icon: Icon, label, href }: { icon: any; label: string; href: string }) {
+  return (
+    <a href={href} className="flex items-center gap-3 py-2 text-sm text-[#d8cfbb] transition-colors hover:text-[#c5a059]">
+      <Icon size={15} />
+      <span>{label}</span>
+    </a>
   );
 }
